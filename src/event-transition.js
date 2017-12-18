@@ -11,10 +11,11 @@ import CSSPrefix from 'cssprefix';
 const
   STATE_STOPPED = 0, STATE_DELAYING = 1, STATE_PLAYING = 2,
 
-  EVENT_TYPE_RUN = 'timedTransitionRun',
-  EVENT_TYPE_START = 'timedTransitionStart',
-  EVENT_TYPE_END = 'timedTransitionEnd',
-  EVENT_TYPE_CANCEL = 'timedTransitionCancel',
+  PREFIX = 'timed',
+  EVENT_TYPE_RUN = `${PREFIX}TransitionRun`,
+  EVENT_TYPE_START = `${PREFIX}TransitionStart`,
+  EVENT_TYPE_END = `${PREFIX}TransitionEnd`,
+  EVENT_TYPE_CANCEL = `${PREFIX}TransitionCancel`,
 
   isObject = (() => {
     const toString = {}.toString, fnToString = {}.hasOwnProperty.toString,
