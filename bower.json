@@ -1,0 +1,26 @@
+{
+  "name": "timed-transition",
+  "version": "0.0.1",
+  "description": "xxx",
+  "keywords": [
+    "xxx"
+  ],
+  "main": "timed-transition.min.js",
+  "homepage": "https://github.com/anseki/timed-transition",
+  "repository": {
+    "type": "git",
+    "url": "git://github.com/anseki/timed-transition.git"
+  },
+  "moduleType": [],
+  "ignore": [
+    "**/.*",
+    "node_modules",
+    "bower_components",
+    "test",
+    "tests"
+  ],
+  "license": "MIT",
+  "authors": [
+    "anseki <AnSeki.aff@gmail.com>"
+  ]
+}

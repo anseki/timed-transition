@@ -1,0 +1,59 @@
+@import "compass";
+@import "common";
+
+$media: "";
+%anim-init#{$media} { @include anim-init; }
+
+.target-nodelay,
+.target-delay-3s,
+.target-delay-m3s,
+.target-delay-m1s {
+  width: 100px;
+  height: 100px;
+  background-color: #21b7bd;
+
+  @extend %anim-init#{$media};
+  @include transition-property(margin-left);
+  @include transition-duration(5000ms);
+  @include transition-timing-function(linear);
+  margin-left: 0;
+
+  &.on {
+    margin-left: 600px;
+  }
+
+  &.force {
+    @include transition-property(none); // Disable animation
+  }
+}
+
+.target-delay-3s {
+  @include transition-delay(3000ms);
+}
+
+.target-delay-m3s {
+  @include transition-delay(-3000ms);
+}
+
+.target-delay-m1s {
+  @include transition-delay(-1000ms);
+}
+
+.target-opacity {
+  height: 100px;
+  background-color: blue;
+
+  @extend %anim-init#{$media};
+  @include transition-property(opacity);
+  @include transition-duration(5000ms);
+  @include transition-timing-function(linear);
+  opacity: 0;
+
+  &.on {
+    opacity: 1;
+  }
+
+  &.force {
+    @include transition-property(none); // Disable animation
+  }
+}
