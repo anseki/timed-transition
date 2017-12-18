@@ -7,7 +7,8 @@ $media: "";
 .target-nodelay,
 .target-delay-3s,
 .target-delay-m3s,
-.target-delay-m1s {
+.target-delay-m1s,
+.target-delay-m8s {
   width: 100px;
   height: 100px;
   background-color: #21b7bd;
@@ -37,6 +38,10 @@ $media: "";
 
 .target-delay-m1s {
   @include transition-delay(-1000ms);
+}
+
+.target-delay-m8s {
+  @include transition-delay(-8000ms);
 }
 
 .target-opacity {
