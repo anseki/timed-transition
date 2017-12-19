@@ -62,11 +62,11 @@ let insId = 0;
  * @returns {void}
  */
 function fireEvent(props, type) {
-  const elapsedTime = (
-      type === EVENT_TYPE_RUN || type === EVENT_TYPE_START ?
-        Math.min(Math.max(-props.delay, 0), props.duration) :
+  const initTime = Math.min(Math.max(-props.delay, 0), props.duration),
+    elapsedTime = (
+      type === EVENT_TYPE_RUN || type === EVENT_TYPE_START ? initTime :
       // The value for transitionend might NOT be transition-duration. (csswg.org may be wrong)
-      props.startTime ? Date.now() - props.startTime : 0
+      props.startTime ? initTime + (Date.now() - props.startTime) : 0
     ) / 1000;
 
   let event;
@@ -408,5 +408,6 @@ class TimedTransition {
   static get STATE_DELAYING() { return STATE_DELAYING; }
   static get STATE_PLAYING() { return STATE_PLAYING; }
 }
+
 
 export default TimedTransition;

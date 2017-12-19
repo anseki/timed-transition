@@ -136,7 +136,10 @@ insProps = {};
 var insId = 0;
 
 // [DEBUG]
-window.insProps = insProps;
+var STATE_TEXT = {};
+STATE_TEXT[STATE_STOPPED] = 'STATE_STOPPED';
+STATE_TEXT[STATE_DELAYING] = 'STATE_DELAYING';
+STATE_TEXT[STATE_PLAYING] = 'STATE_PLAYING';
 // [/DEBUG]
 
 /**
@@ -145,9 +148,10 @@ window.insProps = insProps;
  * @returns {void}
  */
 function fireEvent(props, type) {
-  var elapsedTime = (type === EVENT_TYPE_RUN || type === EVENT_TYPE_START ? Math.min(Math.max(-props.delay, 0), props.duration) :
+  var initTime = Math.min(Math.max(-props.delay, 0), props.duration),
+      elapsedTime = (type === EVENT_TYPE_RUN || type === EVENT_TYPE_START ? initTime :
   // The value for transitionend might NOT be transition-duration. (csswg.org may be wrong)
-  props.startTime ? Date.now() - props.startTime : 0) / 1000;
+  props.startTime ? initTime + (Date.now() - props.startTime) : 0) / 1000;
 
   var event = void 0;
   try {
@@ -568,6 +572,13 @@ var TimedTransition = function () {
 
   return TimedTransition;
 }();
+
+// [DEBUG]
+
+
+TimedTransition.insProps = insProps;
+TimedTransition.STATE_TEXT = STATE_TEXT;
+// [/DEBUG]
 
 exports.default = TimedTransition;
 module.exports = exports['default'];
