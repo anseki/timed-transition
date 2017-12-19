@@ -87,18 +87,6 @@ function fireEvent(props, type) {
 }
 
 /**
- * Finish the "on/off" immediately by isOn.
- * @param {props} props - `props` of instance.
- * @returns {void}
- */
-function fixState(props) {
-  props.state = STATE_STOPPED;
-  props.runTime = 0;
-  props.startTime = 0;
-  props.currentPosition = props.isOn ? props.duration : 0;
-}
-
-/**
  * @param {props} props - `props` of instance.
  * @returns {void}
  */
@@ -111,14 +99,28 @@ function fixCurrentPosition(props) {
 }
 
 /**
+ * Finish the "on/off" immediately by isOn.
+ * @param {props} props - `props` of instance.
+ * @returns {void}
+ */
+function finishAll(props) {
+  props.state = STATE_STOPPED;
+  props.runTime = 0;
+  props.startTime = 0;
+  props.currentPosition = props.isOn ? props.duration : 0;
+}
+
+/**
  * @param {props} props - `props` of instance.
  * @returns {void}
  */
 function finishPlaying(props) {
   if (props.state !== STATE_PLAYING) { return; }
 
-  fixState(props);
+  props.state = STATE_STOPPED;
   fireEvent(props, EVENT_TYPE_END);
+
+  finishAll(props);
 }
 
 /**
@@ -133,12 +135,24 @@ function finishDelaying(props) {
   props.isReversing = !props.isOn;
   fireEvent(props, EVENT_TYPE_START);
 
-  const durationLeft = props.duration - props.currentPosition;
+  const durationLeft = props.isOn ? props.duration - props.currentPosition : props.currentPosition;
   if (durationLeft > 0) {
     props.timer = setTimeout(() => { finishPlaying(props); }, durationLeft);
   } else {
     finishPlaying(props);
   }
+}
+
+/**
+ * @param {props} props - `props` of instance.
+ * @returns {void}
+ */
+function abort(props) {
+  clearTimeout(props.timer);
+  if (props.state === STATE_STOPPED) { return; }
+
+  props.state = STATE_STOPPED;
+  fireEvent(props, EVENT_TYPE_CANCEL);
 }
 
 /**
@@ -157,17 +171,17 @@ function on(props, force) {
       - Playing to `on` and `force`
   */
 
-  clearTimeout(props.timer);
-  if (props.state !== STATE_STOPPED) { fireEvent(props, EVENT_TYPE_CANCEL); }
   if (props.options.procToOn) { props.options.procToOn.call(props.ins, !!force); }
 
   if (force || !props.isOn && props.state === STATE_DELAYING ||
       -props.delay > props.duration) { // The delay must have not changed before turning over.
+    abort(props);
     props.isOn = true;
-    fixState(props);
+    finishAll(props);
 
   } else {
     fixCurrentPosition(props);
+    abort(props);
 
     props.state = STATE_DELAYING;
     props.isOn = true;
@@ -202,17 +216,17 @@ function off(props, force) {
       - Playing to `off` and `force`
   */
 
-  clearTimeout(props.timer);
-  if (props.state !== STATE_STOPPED) { fireEvent(props, EVENT_TYPE_CANCEL); }
   if (props.options.procToOff) { props.options.procToOff.call(props.ins, !!force); }
 
   if (force || props.isOn && props.state === STATE_DELAYING ||
       -props.delay > props.duration) { // The delay must have not changed before turning over.
+    abort(props);
     props.isOn = false;
-    fixState(props);
+    finishAll(props);
 
   } else {
     fixCurrentPosition(props);
+    abort(props);
 
     props.state = STATE_DELAYING;
     props.isOn = false;
@@ -326,7 +340,7 @@ class TimedTransition {
     if (!options.hasOwnProperty('delay')) { options.delay = 0; }
 
     setOptions(props, options);
-    fixState(props);
+    finishAll(props);
   }
 
   /**
