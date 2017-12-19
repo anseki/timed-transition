@@ -239,9 +239,13 @@ function off(props, force) {
 function setOptions(props, newOptions) {
   const options = props.options;
 
-  // property
-  if (typeof newOptions.property === 'string') {
-    options.property = newOptions.property;
+  function parseAsCss(option) {
+    const optionValue = newOptions[option];
+    return typeof optionValue === 'string' ? optionValue.trim() :
+      newOptions.hasOwnProperty(option) ? // From CSS
+        (getComputedStyle(props.element, '')[CSSPrefix.getName(`transition-${option}`)] || '')
+          .split(/\s+/)[typeof optionValue === 'number' ? optionValue : 0].trim() :
+      null;
   }
 
   // pseudoElement
@@ -249,26 +253,25 @@ function setOptions(props, newOptions) {
     options.pseudoElement = newOptions.pseudoElement;
   }
 
+  // property
+  {
+    const value = parseAsCss('property');
+    if (typeof value === 'string') { options.property = value; }
+  }
+
   // duration, delay
   ['duration', 'delay'].forEach(option => {
-    let value;
-    if (typeof newOptions[option] === 'string') {
-      value = newOptions[option].trim();
-    } else if (newOptions.hasOwnProperty(option)) { // From CSS
-      value =
-        (getComputedStyle(props.element, '')[CSSPrefix.getName(`transition-${option}`)] || '')
-        .split(/\s+/)[typeof newOptions[option] === 'number' ? newOptions[option] : 0].trim();
-    }
+    const value = parseAsCss(option);
     if (typeof value === 'string') {
       let matches, timeValue;
-      if (/^0+$/.test(value)) { // This is invalid for CSS.
+      if (/^[0\.]+$/.test(value)) { // This is invalid for CSS.
         options[option] = '0s';
         props[option] = 0;
       } else if ((matches = /^(.+)(m)?s$/.exec(value)) &&
           isFinite((timeValue = parseFloat(matches[1]))) &&
           (option !== 'duration' || timeValue >= 0)) {
         options[option] = `${timeValue}${matches[2] || ''}s`;
-        props[option] = timeValue / (matches[2] ? 1 : 1000);
+        props[option] = timeValue * (matches[2] ? 1 : 1000);
       }
     }
   });
@@ -294,8 +297,8 @@ class TimedTransition {
     const props = {
       ins: this,
       options: { // Initial options (not default)
-        property: '',
-        pseudoElement: ''
+        pseudoElement: '',
+        property: ''
       },
       duration: 0,
       delay: 0,
@@ -367,11 +370,11 @@ class TimedTransition {
 
   get isReversing() { return insProps[this._id].isReversing; }
 
-  get property() { return insProps[this._id].options.property; }
-  set property(value) { setOptions(insProps[this._id], {property: value}); }
-
   get pseudoElement() { return insProps[this._id].options.pseudoElement; }
   set pseudoElement(value) { setOptions(insProps[this._id], {pseudoElement: value}); }
+
+  get property() { return insProps[this._id].options.property; }
+  set property(value) { setOptions(insProps[this._id], {property: value}); }
 
   get duration() { return insProps[this._id].options.duration; }
   set duration(value) { setOptions(insProps[this._id], {duration: value}); }
