@@ -148,7 +148,7 @@ function finishDelaying(props) {
  * @param {props} props - `props` of instance.
  * @returns {void}
  */
-function stop(props) {
+function abort(props) {
   clearTimeout(props.timer);
   if (props.state === STATE_STOPPED) { return; }
 
@@ -176,13 +176,13 @@ function on(props, force) {
 
   if (force || !props.isOn && props.state === STATE_DELAYING ||
       -props.delay > props.duration) { // The delay must have not changed before turning over.
-    stop(props);
+    abort(props);
     props.isOn = true;
     finishAll(props);
 
   } else {
     fixCurrentPosition(props);
-    stop(props);
+    abort(props);
 
     props.state = STATE_DELAYING;
     props.isOn = true;
@@ -221,13 +221,13 @@ function off(props, force) {
 
   if (force || props.isOn && props.state === STATE_DELAYING ||
       -props.delay > props.duration) { // The delay must have not changed before turning over.
-    stop(props);
+    abort(props);
     props.isOn = false;
     finishAll(props);
 
   } else {
     fixCurrentPosition(props);
-    stop(props);
+    abort(props);
 
     props.state = STATE_DELAYING;
     props.isOn = false;
