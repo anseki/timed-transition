@@ -118,9 +118,8 @@ function fixCurrentPosition(props) {
 function finishPlaying(props) {
   if (props.state !== STATE_PLAYING) { return; }
 
-  fireEvent(props, EVENT_TYPE_END);
-
   fixState(props);
+  fireEvent(props, EVENT_TYPE_END);
 }
 
 /**
@@ -132,8 +131,8 @@ function finishDelaying(props) {
 
   props.state = STATE_PLAYING;
   props.startTime = Date.now();
-  fireEvent(props, EVENT_TYPE_START);
   props.isReversing = !props.isOn;
+  fireEvent(props, EVENT_TYPE_START);
 
   const durationLeft = props.duration - props.currentPosition;
   if (durationLeft > 0) {
