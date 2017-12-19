@@ -1,4 +1,8 @@
 /*
+    DON'T MANUALLY EDIT THIS FILE
+*/
+
+/*
  * TimedTransition
  * https://github.com/anseki/timed-transition
  *
@@ -51,9 +55,6 @@ const
 
 let insId = 0;
 
-// [DEBUG]
-window.insProps = insProps;
-// [/DEBUG]
 
 /**
  * @param {props} props - `props` of instance.
