@@ -20,11 +20,11 @@ var utils = (function() {
    */
 
   var TOLERANCE = {time: 100, evtElapsedTime: 0.1},
-    traceLog = [], startTime;
+    eventLog = [], startTime;
 
   function listener(event) {
     var curTime = Date.now() - startTime, instance = event.timedTransition;
-    traceLog.push({
+    eventLog.push({
       time: curTime,
       state: instance.state,
       isReversing: instance.isReversing,
@@ -47,7 +47,7 @@ var utils = (function() {
 
   function addLog(message, instance) {
     var curTime = Date.now() - startTime;
-    traceLog.push({
+    eventLog.push({
       time: curTime,
       state: instance.state,
       isReversing: instance.isReversing,
@@ -59,7 +59,7 @@ var utils = (function() {
   }
 
   function initLog() {
-    traceLog.length = 0;
+    eventLog.length = 0;
     startTime = Date.now();
     return startTime;
   }
@@ -132,7 +132,7 @@ var utils = (function() {
     evtBubbles: 'boolean',
     evtCancelable: 'boolean'
   };
-  function toBeTraceLog(actual, expected) {
+  function toBeEventLog(actual, expected) {
     if (!Array.isArray(actual)) { return {pass: false, message: '`actual` is not Array'}; }
     if (!Array.isArray(expected)) { return {pass: false, message: '`expected` is not Array'}; }
 
@@ -183,11 +183,11 @@ var utils = (function() {
   }
 
   var customMatchers = {
-    toBeTraceLog: function() { return {compare: toBeTraceLog}; }
+    toBeEventLog: function() { return {compare: toBeEventLog}; }
   };
 
   return {
-    traceLog: traceLog,
+    eventLog: eventLog,
     addLog: addLog,
     initLog: initLog,
     setupListener: setupListener,
