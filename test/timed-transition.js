@@ -149,9 +149,9 @@ STATE_TEXT[STATE_PLAYING] = 'STATE_PLAYING';
  */
 function fireEvent(props, type) {
   var initTime = Math.min(Math.max(-props.delay, 0), props.duration),
-      elapsedTime = (type === EVENT_TYPE_RUN || type === EVENT_TYPE_START ? initTime :
+      elapsedTime = (initTime + (
   // The value for transitionend might NOT be transition-duration. (csswg.org may be wrong)
-  props.startTime ? initTime + (Date.now() - props.startTime) : 0) / 1000;
+  (type === EVENT_TYPE_END || type === EVENT_TYPE_CANCEL) && props.startTime ? Date.now() - props.startTime : 0)) / 1000;
 
   var event = void 0;
   try {

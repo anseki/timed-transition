@@ -63,10 +63,10 @@ let insId = 0;
  */
 function fireEvent(props, type) {
   const initTime = Math.min(Math.max(-props.delay, 0), props.duration),
-    elapsedTime = (
-      type === EVENT_TYPE_RUN || type === EVENT_TYPE_START ? initTime :
+    elapsedTime = (initTime +
       // The value for transitionend might NOT be transition-duration. (csswg.org may be wrong)
-      props.startTime ? initTime + (Date.now() - props.startTime) : 0
+      ((type === EVENT_TYPE_END || type === EVENT_TYPE_CANCEL) && props.startTime ?
+        Date.now() - props.startTime : 0)
     ) / 1000;
 
   let event;
