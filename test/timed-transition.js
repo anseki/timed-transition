@@ -136,10 +136,14 @@ insProps = {};
 var insId = 0;
 
 // [DEBUG]
+var traceLog = [];
 var STATE_TEXT = {};
 STATE_TEXT[STATE_STOPPED] = 'STATE_STOPPED';
 STATE_TEXT[STATE_DELAYING] = 'STATE_DELAYING';
 STATE_TEXT[STATE_PLAYING] = 'STATE_PLAYING';
+function roundTime(timeValue) {
+  return Math.round(timeValue / 100) * 100;
+} // for traceLog
 // [/DEBUG]
 
 /**
@@ -148,6 +152,11 @@ STATE_TEXT[STATE_PLAYING] = 'STATE_PLAYING';
  * @returns {void}
  */
 function fireEvent(props, type) {
+  // [DEBUG]
+  traceLog.push('<fireEvent>', '_id:' + props._id, 'state:' + STATE_TEXT[props.state]);
+  traceLog.push('isOn:' + props.isOn, 'runTime:' + roundTime(props.runTime), 'startTime:' + roundTime(props.startTime), 'currentPosition:' + roundTime(props.currentPosition));
+  traceLog.push('type:' + type);
+  // [/DEBUG]
   var initTime = Math.min(Math.max(-props.delay, 0), props.duration),
       elapsedTime = (initTime + (
   // The value for transitionend might NOT be transition-duration. (csswg.org may be wrong)
@@ -169,6 +178,7 @@ function fireEvent(props, type) {
   }
   event.timedTransition = props.ins;
   props.element.dispatchEvent(event);
+  traceLog.push('</fireEvent>'); // [DEBUG/]
 }
 
 /**
@@ -176,11 +186,18 @@ function fireEvent(props, type) {
  * @returns {void}
  */
 function fixCurrentPosition(props) {
+  // [DEBUG]
+  traceLog.push('<fixCurrentPosition>', '_id:' + props._id, 'state:' + STATE_TEXT[props.state]);
+  traceLog.push('currentPosition:' + roundTime(props.currentPosition));
+  // [/DEBUG]
   if (props.state !== STATE_PLAYING) {
+    traceLog.push('CANCEL', '</fixCurrentPosition>'); // [DEBUG/]
     return;
   }
   var playingTime = Date.now() - props.startTime;
   props.currentPosition = props.isOn ? Math.min(props.currentPosition + playingTime, props.duration) : Math.max(props.currentPosition - playingTime, 0);
+  traceLog.push('currentPosition:' + roundTime(props.currentPosition));
+  traceLog.push('</fixCurrentPosition>'); // [DEBUG/]
 }
 
 /**
@@ -189,7 +206,9 @@ function fixCurrentPosition(props) {
  * @returns {void}
  */
 function finishAll(props) {
+  traceLog.push('<finishAll/>', '_id:' + props._id, 'isOn:' + props.isOn); // [DEBUG/]
   props.state = STATE_STOPPED;
+  traceLog.push('state:' + STATE_TEXT[props.state]); // [DEBUG/]
   props.runTime = 0;
   props.startTime = 0;
   props.currentPosition = props.isOn ? props.duration : 0;
@@ -200,14 +219,21 @@ function finishAll(props) {
  * @returns {void}
  */
 function finishPlaying(props) {
+  // [DEBUG]
+  traceLog.push('<finishPlaying>', '_id:' + props._id, 'state:' + STATE_TEXT[props.state]);
+  traceLog.push('isOn:' + props.isOn, 'runTime:' + roundTime(props.runTime), 'startTime:' + roundTime(props.startTime), 'currentPosition:' + roundTime(props.currentPosition));
+  // [/DEBUG]
   if (props.state !== STATE_PLAYING) {
+    traceLog.push('CANCEL', '</finishPlaying>'); // [DEBUG/]
     return;
   }
 
   props.state = STATE_STOPPED;
+  traceLog.push('state:' + STATE_TEXT[props.state]); // [DEBUG/]
   fireEvent(props, EVENT_TYPE_END);
 
   finishAll(props);
+  traceLog.push('</finishPlaying>'); // [DEBUG/]
 }
 
 /**
@@ -215,16 +241,23 @@ function finishPlaying(props) {
  * @returns {void}
  */
 function finishDelaying(props) {
+  // [DEBUG]
+  traceLog.push('<finishDelaying>', '_id:' + props._id, 'state:' + STATE_TEXT[props.state]);
+  traceLog.push('isOn:' + props.isOn, 'runTime:' + roundTime(props.runTime), 'startTime:' + roundTime(props.startTime), 'currentPosition:' + roundTime(props.currentPosition));
+  // [/DEBUG]
   if (props.state !== STATE_DELAYING) {
+    traceLog.push('CANCEL', '</finishDelaying>'); // [DEBUG/]
     return;
   }
 
   props.state = STATE_PLAYING;
+  traceLog.push('state:' + STATE_TEXT[props.state]); // [DEBUG/]
   props.startTime = Date.now();
   props.isReversing = !props.isOn;
   fireEvent(props, EVENT_TYPE_START);
 
   var durationLeft = props.isOn ? props.duration - props.currentPosition : props.currentPosition;
+  traceLog.push('durationLeft:' + roundTime(durationLeft)); // [DEBUG/]
   if (durationLeft > 0) {
     props.timer = setTimeout(function () {
       finishPlaying(props);
@@ -232,6 +265,7 @@ function finishDelaying(props) {
   } else {
     finishPlaying(props);
   }
+  traceLog.push('</finishDelaying>'); // [DEBUG/]
 }
 
 /**
@@ -239,13 +273,17 @@ function finishDelaying(props) {
  * @returns {void}
  */
 function abort(props) {
+  traceLog.push('<abort>', '_id:' + props._id, 'isOn:' + props.isOn); // [DEBUG/]
   clearTimeout(props.timer);
   if (props.state === STATE_STOPPED) {
+    traceLog.push('CANCEL', '</abort>'); // [DEBUG/]
     return;
   }
 
   props.state = STATE_STOPPED;
+  traceLog.push('state:' + STATE_TEXT[props.state]); // [DEBUG/]
   fireEvent(props, EVENT_TYPE_CANCEL);
+  traceLog.push('</abort>'); // [DEBUG/]
 }
 
 /**
@@ -254,7 +292,13 @@ function abort(props) {
  * @returns {void}
  */
 function _on(props, force) {
+  // [DEBUG]
+  traceLog.push('<on>', '_id:' + props._id, 'state:' + STATE_TEXT[props.state]);
+  traceLog.push('force:' + !!force);
+  traceLog.push('isOn:' + props.isOn, 'runTime:' + roundTime(props.runTime), 'startTime:' + roundTime(props.startTime), 'currentPosition:' + roundTime(props.currentPosition));
+  // [/DEBUG]
   if (props.isOn && props.state === STATE_STOPPED || props.isOn && props.state !== STATE_STOPPED && !force) {
+    traceLog.push('CANCEL', '</on>'); // [DEBUG/]
     return;
   }
   /*
@@ -269,6 +313,9 @@ function _on(props, force) {
 
   if (force || !props.isOn && props.state === STATE_DELAYING || -props.delay > props.duration) {
     // The delay must have not changed before turning over.
+    // [DEBUG]
+    traceLog.push('STOP(' + (force ? 'force' : !props.isOn && props.state === STATE_DELAYING ? 'DELAYING' : 'over-duration') + ')');
+    // [/DEBUG]
     abort(props);
     props.isOn = true;
     finishAll(props);
@@ -277,6 +324,7 @@ function _on(props, force) {
     abort(props);
 
     props.state = STATE_DELAYING;
+    traceLog.push('state:' + STATE_TEXT[props.state]); // [DEBUG/]
     props.isOn = true;
     props.runTime = Date.now();
     props.startTime = 0;
@@ -294,6 +342,7 @@ function _on(props, force) {
       finishDelaying(props);
     }
   }
+  traceLog.push('</on>'); // [DEBUG/]
 }
 
 /**
@@ -302,7 +351,13 @@ function _on(props, force) {
  * @returns {void}
  */
 function _off(props, force) {
+  // [DEBUG]
+  traceLog.push('<off>', '_id:' + props._id, 'state:' + STATE_TEXT[props.state]);
+  traceLog.push('force:' + !!force);
+  traceLog.push('isOn:' + props.isOn, 'runTime:' + roundTime(props.runTime), 'startTime:' + roundTime(props.startTime), 'currentPosition:' + roundTime(props.currentPosition));
+  // [/DEBUG]
   if (!props.isOn && props.state === STATE_STOPPED || !props.isOn && props.state !== STATE_STOPPED && !force) {
+    traceLog.push('CANCEL', '</off>'); // [DEBUG/]
     return;
   }
   /*
@@ -317,6 +372,9 @@ function _off(props, force) {
 
   if (force || props.isOn && props.state === STATE_DELAYING || -props.delay > props.duration) {
     // The delay must have not changed before turning over.
+    // [DEBUG]
+    traceLog.push('STOP(' + (force ? 'force' : props.isOn && props.state === STATE_DELAYING ? 'DELAYING' : 'over-duration') + ')');
+    // [/DEBUG]
     abort(props);
     props.isOn = false;
     finishAll(props);
@@ -325,6 +383,7 @@ function _off(props, force) {
     abort(props);
 
     props.state = STATE_DELAYING;
+    traceLog.push('state:' + STATE_TEXT[props.state]); // [DEBUG/]
     props.isOn = false;
     props.runTime = Date.now();
     props.startTime = 0;
@@ -342,6 +401,7 @@ function _off(props, force) {
       finishDelaying(props);
     }
   }
+  traceLog.push('</off>'); // [DEBUG/]
 }
 
 /**
@@ -577,7 +637,9 @@ var TimedTransition = function () {
 
 
 TimedTransition.insProps = insProps;
+TimedTransition.traceLog = traceLog;
 TimedTransition.STATE_TEXT = STATE_TEXT;
+TimedTransition.roundTime = roundTime;
 // [/DEBUG]
 
 exports.default = TimedTransition;

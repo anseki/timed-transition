@@ -92,11 +92,14 @@ function fireEvent(props, type) {
  * @returns {void}
  */
 function fixCurrentPosition(props) {
-  if (props.state !== STATE_PLAYING) { return; }
+  if (props.state !== STATE_PLAYING) {
+    return;
+  }
   const playingTime = Date.now() - props.startTime;
   props.currentPosition = props.isOn ?
     Math.min(props.currentPosition + playingTime, props.duration) :
     Math.max(props.currentPosition - playingTime, 0);
+  traceLog.push(`currentPosition:${roundTime(props.currentPosition)}`);
 }
 
 /**
@@ -116,7 +119,9 @@ function finishAll(props) {
  * @returns {void}
  */
 function finishPlaying(props) {
-  if (props.state !== STATE_PLAYING) { return; }
+  if (props.state !== STATE_PLAYING) {
+    return;
+  }
 
   props.state = STATE_STOPPED;
   fireEvent(props, EVENT_TYPE_END);
@@ -129,7 +134,9 @@ function finishPlaying(props) {
  * @returns {void}
  */
 function finishDelaying(props) {
-  if (props.state !== STATE_DELAYING) { return; }
+  if (props.state !== STATE_DELAYING) {
+    return;
+  }
 
   props.state = STATE_PLAYING;
   props.startTime = Date.now();
@@ -150,7 +157,9 @@ function finishDelaying(props) {
  */
 function abort(props) {
   clearTimeout(props.timer);
-  if (props.state === STATE_STOPPED) { return; }
+  if (props.state === STATE_STOPPED) {
+    return;
+  }
 
   props.state = STATE_STOPPED;
   fireEvent(props, EVENT_TYPE_CANCEL);
