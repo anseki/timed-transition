@@ -1713,6 +1713,50 @@ describe('flow', function() {
 
         setTimeout(function() {
           expect(traceLog).toEqual([
+            '<on>', '_id:' + timedTransition._id, 'state:STATE_STOPPED', 'force:false',
+            'isOn:false', 'runTime:0', 'startTime:0', 'currentPosition:0',
+
+            '<fixCurrentPosition>', '_id:' + timedTransition._id, 'state:STATE_STOPPED',
+            'currentPosition:0',
+            'CANCEL', '</fixCurrentPosition>',
+
+            '<abort>', '_id:' + timedTransition._id, 'isOn:false',
+            'CANCEL', '</abort>',
+
+            'state:STATE_DELAYING',
+
+            '<fireEvent>', '_id:' + timedTransition._id, 'state:STATE_DELAYING',
+            'isOn:true', 'runTime:' + logTime, 'startTime:0', 'currentPosition:0',
+            'type:timedTransitionRun',
+            '</fireEvent>',
+
+            '<finishDelaying>', '_id:' + timedTransition._id, 'state:STATE_DELAYING',
+            'isOn:true', 'runTime:' + logTime, 'startTime:0', 'currentPosition:' + NDELAY,
+            'state:STATE_PLAYING',
+
+            '<fireEvent>', '_id:' + timedTransition._id, 'state:STATE_PLAYING',
+            'isOn:true', 'runTime:' + logTime, 'startTime:' + logTime, 'currentPosition:' + NDELAY,
+            'type:timedTransitionStart',
+            '</fireEvent>',
+
+            'durationLeft:' + (DURATION - NDELAY),
+            '</finishDelaying>',
+
+            '</on>',
+
+            '<finishPlaying>', '_id:' + timedTransition._id, 'state:STATE_PLAYING',
+            'isOn:true', 'runTime:' + logTime, 'startTime:' + logTime, 'currentPosition:' + NDELAY,
+            'state:STATE_STOPPED',
+
+            '<fireEvent>', '_id:' + timedTransition._id, 'state:STATE_STOPPED',
+            'isOn:true', 'runTime:' + logTime, 'startTime:' + logTime, 'currentPosition:' + NDELAY,
+            'type:timedTransitionEnd',
+            '</fireEvent>',
+
+            '<finishAll/>', '_id:' + timedTransition._id, 'isOn:true',
+            'state:STATE_STOPPED',
+
+            '</finishPlaying>'
           ]);
 
           expect(utils.eventLog).toBeEventLog(
@@ -1743,6 +1787,55 @@ describe('flow', function() {
 
         setTimeout(function() {
           expect(traceLog).toEqual([
+            '<off>', '_id:' + timedTransition._id, 'state:STATE_STOPPED', 'force:false',
+            'isOn:true', 'runTime:0', 'startTime:0', 'currentPosition:' + DURATION,
+
+            '<fixCurrentPosition>', '_id:' + timedTransition._id, 'state:STATE_STOPPED',
+            'currentPosition:' + DURATION,
+            'CANCEL', '</fixCurrentPosition>',
+
+            '<abort>', '_id:' + timedTransition._id, 'isOn:true',
+            'CANCEL', '</abort>',
+
+            'state:STATE_DELAYING',
+
+            '<fireEvent>', '_id:' + timedTransition._id, 'state:STATE_DELAYING',
+            'isOn:false', 'runTime:' + logTime, 'startTime:0',
+            'currentPosition:' + DURATION,
+            'type:timedTransitionRun',
+            '</fireEvent>',
+
+            '<finishDelaying>', '_id:' + timedTransition._id, 'state:STATE_DELAYING',
+            'isOn:false', 'runTime:' + logTime, 'startTime:0',
+            'currentPosition:' + (DURATION - NDELAY),
+            'state:STATE_PLAYING',
+
+            '<fireEvent>', '_id:' + timedTransition._id, 'state:STATE_PLAYING',
+            'isOn:false', 'runTime:' + logTime, 'startTime:' + logTime,
+            'currentPosition:' + (DURATION - NDELAY),
+            'type:timedTransitionStart',
+            '</fireEvent>',
+
+            'durationLeft:' + (DURATION - NDELAY),
+            '</finishDelaying>',
+
+            '</off>',
+
+            '<finishPlaying>', '_id:' + timedTransition._id, 'state:STATE_PLAYING',
+            'isOn:false', 'runTime:' + logTime, 'startTime:' + logTime,
+            'currentPosition:' + (DURATION - NDELAY),
+            'state:STATE_STOPPED',
+
+            '<fireEvent>', '_id:' + timedTransition._id, 'state:STATE_STOPPED',
+            'isOn:false', 'runTime:' + logTime, 'startTime:' + logTime,
+            'currentPosition:' + (DURATION - NDELAY),
+            'type:timedTransitionEnd',
+            '</fireEvent>',
+
+            '<finishAll/>', '_id:' + timedTransition._id, 'isOn:false',
+            'state:STATE_STOPPED',
+
+            '</finishPlaying>'
           ]);
 
           expect(utils.eventLog).toBeEventLog(
@@ -1777,6 +1870,94 @@ describe('flow', function() {
 
           setTimeout(function() {
             expect(traceLog).toEqual([
+              '<on>', '_id:' + timedTransition._id, 'state:STATE_STOPPED', 'force:false',
+              'isOn:false', 'runTime:0', 'startTime:0', 'currentPosition:0',
+
+              '<fixCurrentPosition>', '_id:' + timedTransition._id, 'state:STATE_STOPPED',
+              'currentPosition:0',
+              'CANCEL', '</fixCurrentPosition>',
+
+              '<abort>', '_id:' + timedTransition._id, 'isOn:false',
+              'CANCEL', '</abort>',
+
+              'state:STATE_DELAYING',
+
+              '<fireEvent>', '_id:' + timedTransition._id, 'state:STATE_DELAYING',
+              'isOn:true', 'runTime:' + logTime, 'startTime:0', 'currentPosition:0',
+              'type:timedTransitionRun',
+              '</fireEvent>',
+
+              '<finishDelaying>', '_id:' + timedTransition._id, 'state:STATE_DELAYING',
+              'isOn:true', 'runTime:' + logTime, 'startTime:0', 'currentPosition:' + NDELAY,
+              'state:STATE_PLAYING',
+
+              '<fireEvent>', '_id:' + timedTransition._id, 'state:STATE_PLAYING',
+              'isOn:true', 'runTime:' + logTime, 'startTime:' + logTime, 'currentPosition:' + NDELAY,
+              'type:timedTransitionStart',
+              '</fireEvent>',
+
+              'durationLeft:' + (DURATION - NDELAY),
+              '</finishDelaying>',
+
+              '</on>',
+
+              '<off>', '_id:' + timedTransition._id, 'state:STATE_PLAYING', 'force:false',
+              'isOn:true', 'runTime:' + logTime, 'startTime:' + logTime, 'currentPosition:' + NDELAY,
+
+              '<fixCurrentPosition>', '_id:' + timedTransition._id, 'state:STATE_PLAYING',
+              'currentPosition:' + NDELAY, 'currentPosition:' + (NDELAY + LESS_PLAY),
+              '</fixCurrentPosition>',
+
+              '<abort>', '_id:' + timedTransition._id, 'isOn:true',
+              'state:STATE_STOPPED',
+
+              '<fireEvent>', '_id:' + timedTransition._id, 'state:STATE_STOPPED',
+              'isOn:true', 'runTime:' + logTime, 'startTime:' + logTime,
+              'currentPosition:' + (NDELAY + LESS_PLAY),
+              'type:timedTransitionCancel',
+              '</fireEvent>',
+
+              '</abort>',
+
+              'state:STATE_DELAYING',
+
+              '<fireEvent>', '_id:' + timedTransition._id, 'state:STATE_DELAYING',
+              'isOn:false', 'runTime:' + (logTime + LESS_PLAY), 'startTime:0',
+              'currentPosition:' + (NDELAY + LESS_PLAY),
+              'type:timedTransitionRun',
+              '</fireEvent>',
+
+              '<finishDelaying>', '_id:' + timedTransition._id, 'state:STATE_DELAYING',
+              'isOn:false', 'runTime:' + (logTime + LESS_PLAY), 'startTime:0',
+              'currentPosition:' + (NDELAY + LESS_PLAY - NDELAY),
+              'state:STATE_PLAYING',
+
+              '<fireEvent>', '_id:' + timedTransition._id, 'state:STATE_PLAYING',
+              'isOn:false', 'runTime:' + (logTime + LESS_PLAY), 'startTime:' + (logTime + LESS_PLAY),
+              'currentPosition:' + (NDELAY + LESS_PLAY - NDELAY),
+              'type:timedTransitionStart',
+              '</fireEvent>',
+
+              'durationLeft:' + (NDELAY + LESS_PLAY - NDELAY),
+              '</finishDelaying>',
+
+              '</off>',
+
+              '<finishPlaying>', '_id:' + timedTransition._id, 'state:STATE_PLAYING',
+              'isOn:false', 'runTime:' + (logTime + LESS_PLAY), 'startTime:' + (logTime + LESS_PLAY),
+              'currentPosition:' + (NDELAY + LESS_PLAY - NDELAY),
+              'state:STATE_STOPPED',
+
+              '<fireEvent>', '_id:' + timedTransition._id, 'state:STATE_STOPPED',
+              'isOn:false', 'runTime:' + (logTime + LESS_PLAY), 'startTime:' + (logTime + LESS_PLAY),
+              'currentPosition:' + (NDELAY + LESS_PLAY - NDELAY),
+              'type:timedTransitionEnd',
+              '</fireEvent>',
+
+              '<finishAll/>', '_id:' + timedTransition._id, 'isOn:false',
+              'state:STATE_STOPPED',
+
+              '</finishPlaying>'
             ]);
 
             expect(utils.eventLog).toBeEventLog(
@@ -1817,6 +1998,99 @@ describe('flow', function() {
 
           setTimeout(function() {
             expect(traceLog).toEqual([
+              '<off>', '_id:' + timedTransition._id, 'state:STATE_STOPPED', 'force:false',
+              'isOn:true', 'runTime:0', 'startTime:0', 'currentPosition:' + DURATION,
+
+              '<fixCurrentPosition>', '_id:' + timedTransition._id, 'state:STATE_STOPPED',
+              'currentPosition:' + DURATION,
+              'CANCEL', '</fixCurrentPosition>',
+
+              '<abort>', '_id:' + timedTransition._id, 'isOn:true',
+              'CANCEL', '</abort>',
+
+              'state:STATE_DELAYING',
+
+              '<fireEvent>', '_id:' + timedTransition._id, 'state:STATE_DELAYING',
+              'isOn:false', 'runTime:' + logTime, 'startTime:0',
+              'currentPosition:' + DURATION,
+              'type:timedTransitionRun',
+              '</fireEvent>',
+
+              '<finishDelaying>', '_id:' + timedTransition._id, 'state:STATE_DELAYING',
+              'isOn:false', 'runTime:' + logTime, 'startTime:0',
+              'currentPosition:' + (DURATION - NDELAY),
+              'state:STATE_PLAYING',
+
+              '<fireEvent>', '_id:' + timedTransition._id, 'state:STATE_PLAYING',
+              'isOn:false', 'runTime:' + logTime, 'startTime:' + logTime,
+              'currentPosition:' + (DURATION - NDELAY),
+              'type:timedTransitionStart',
+              '</fireEvent>',
+
+              'durationLeft:' + (DURATION - NDELAY),
+              '</finishDelaying>',
+
+              '</off>',
+
+              '<on>', '_id:' + timedTransition._id, 'state:STATE_PLAYING', 'force:false',
+              'isOn:false', 'runTime:' + logTime, 'startTime:' + logTime,
+              'currentPosition:' + (DURATION - NDELAY),
+
+              '<fixCurrentPosition>', '_id:' + timedTransition._id, 'state:STATE_PLAYING',
+              'currentPosition:' + (DURATION - NDELAY),
+              'currentPosition:' + (DURATION - NDELAY - LESS_PLAY),
+              '</fixCurrentPosition>',
+
+              '<abort>', '_id:' + timedTransition._id, 'isOn:false',
+              'state:STATE_STOPPED',
+
+              '<fireEvent>', '_id:' + timedTransition._id, 'state:STATE_STOPPED',
+              'isOn:false', 'runTime:' + logTime, 'startTime:' + logTime,
+              'currentPosition:' + (DURATION - NDELAY - LESS_PLAY),
+              'type:timedTransitionCancel',
+              '</fireEvent>',
+
+              '</abort>',
+
+              'state:STATE_DELAYING',
+
+              '<fireEvent>', '_id:' + timedTransition._id, 'state:STATE_DELAYING',
+              'isOn:true', 'runTime:' + (logTime + LESS_PLAY), 'startTime:0',
+              'currentPosition:' + (DURATION - NDELAY - LESS_PLAY),
+              'type:timedTransitionRun',
+              '</fireEvent>',
+
+              '<finishDelaying>', '_id:' + timedTransition._id, 'state:STATE_DELAYING',
+              'isOn:true', 'runTime:' + (logTime + LESS_PLAY), 'startTime:0',
+              'currentPosition:' + (DURATION - NDELAY - LESS_PLAY + NDELAY),
+              'state:STATE_PLAYING',
+
+              '<fireEvent>', '_id:' + timedTransition._id, 'state:STATE_PLAYING',
+              'isOn:true', 'runTime:' + (logTime + LESS_PLAY), 'startTime:' + (logTime + LESS_PLAY),
+              'currentPosition:' + (DURATION - NDELAY - LESS_PLAY + NDELAY),
+              'type:timedTransitionStart',
+              '</fireEvent>',
+
+              'durationLeft:' + (DURATION - (DURATION - NDELAY - LESS_PLAY + NDELAY)),
+              '</finishDelaying>',
+
+              '</on>',
+
+              '<finishPlaying>', '_id:' + timedTransition._id, 'state:STATE_PLAYING',
+              'isOn:true', 'runTime:' + (logTime + LESS_PLAY), 'startTime:' + (logTime + LESS_PLAY),
+              'currentPosition:' + (DURATION - NDELAY - LESS_PLAY + NDELAY),
+              'state:STATE_STOPPED',
+
+              '<fireEvent>', '_id:' + timedTransition._id, 'state:STATE_STOPPED',
+              'isOn:true', 'runTime:' + (logTime + LESS_PLAY), 'startTime:' + (logTime + LESS_PLAY),
+              'currentPosition:' + (DURATION - NDELAY - LESS_PLAY + NDELAY),
+              'type:timedTransitionEnd',
+              '</fireEvent>',
+
+              '<finishAll/>', '_id:' + timedTransition._id, 'isOn:true',
+              'state:STATE_STOPPED',
+
+              '</finishPlaying>'
             ]);
 
             expect(utils.eventLog).toBeEventLog(
@@ -1868,6 +2142,50 @@ describe('flow', function() {
 
         setTimeout(function() {
           expect(traceLog).toEqual([
+            '<on>', '_id:' + timedTransition._id, 'state:STATE_STOPPED', 'force:false',
+            'isOn:false', 'runTime:0', 'startTime:0', 'currentPosition:0',
+
+            '<fixCurrentPosition>', '_id:' + timedTransition._id, 'state:STATE_STOPPED',
+            'currentPosition:0',
+            'CANCEL', '</fixCurrentPosition>',
+
+            '<abort>', '_id:' + timedTransition._id, 'isOn:false',
+            'CANCEL', '</abort>',
+
+            'state:STATE_DELAYING',
+
+            '<fireEvent>', '_id:' + timedTransition._id, 'state:STATE_DELAYING',
+            'isOn:true', 'runTime:' + logTime, 'startTime:0', 'currentPosition:0',
+            'type:timedTransitionRun',
+            '</fireEvent>',
+
+            '<finishDelaying>', '_id:' + timedTransition._id, 'state:STATE_DELAYING',
+            'isOn:true', 'runTime:' + logTime, 'startTime:0', 'currentPosition:' + NDELAY,
+            'state:STATE_PLAYING',
+
+            '<fireEvent>', '_id:' + timedTransition._id, 'state:STATE_PLAYING',
+            'isOn:true', 'runTime:' + logTime, 'startTime:' + logTime, 'currentPosition:' + NDELAY,
+            'type:timedTransitionStart',
+            '</fireEvent>',
+
+            'durationLeft:' + (DURATION - NDELAY),
+            '</finishDelaying>',
+
+            '</on>',
+
+            '<finishPlaying>', '_id:' + timedTransition._id, 'state:STATE_PLAYING',
+            'isOn:true', 'runTime:' + logTime, 'startTime:' + logTime, 'currentPosition:' + NDELAY,
+            'state:STATE_STOPPED',
+
+            '<fireEvent>', '_id:' + timedTransition._id, 'state:STATE_STOPPED',
+            'isOn:true', 'runTime:' + logTime, 'startTime:' + logTime, 'currentPosition:' + NDELAY,
+            'type:timedTransitionEnd',
+            '</fireEvent>',
+
+            '<finishAll/>', '_id:' + timedTransition._id, 'isOn:true',
+            'state:STATE_STOPPED',
+
+            '</finishPlaying>'
           ]);
 
           expect(utils.eventLog).toBeEventLog(
@@ -1898,6 +2216,55 @@ describe('flow', function() {
 
         setTimeout(function() {
           expect(traceLog).toEqual([
+            '<off>', '_id:' + timedTransition._id, 'state:STATE_STOPPED', 'force:false',
+            'isOn:true', 'runTime:0', 'startTime:0', 'currentPosition:' + DURATION,
+
+            '<fixCurrentPosition>', '_id:' + timedTransition._id, 'state:STATE_STOPPED',
+            'currentPosition:' + DURATION,
+            'CANCEL', '</fixCurrentPosition>',
+
+            '<abort>', '_id:' + timedTransition._id, 'isOn:true',
+            'CANCEL', '</abort>',
+
+            'state:STATE_DELAYING',
+
+            '<fireEvent>', '_id:' + timedTransition._id, 'state:STATE_DELAYING',
+            'isOn:false', 'runTime:' + logTime, 'startTime:0',
+            'currentPosition:' + DURATION,
+            'type:timedTransitionRun',
+            '</fireEvent>',
+
+            '<finishDelaying>', '_id:' + timedTransition._id, 'state:STATE_DELAYING',
+            'isOn:false', 'runTime:' + logTime, 'startTime:0',
+            'currentPosition:' + (DURATION - NDELAY),
+            'state:STATE_PLAYING',
+
+            '<fireEvent>', '_id:' + timedTransition._id, 'state:STATE_PLAYING',
+            'isOn:false', 'runTime:' + logTime, 'startTime:' + logTime,
+            'currentPosition:' + (DURATION - NDELAY),
+            'type:timedTransitionStart',
+            '</fireEvent>',
+
+            'durationLeft:' + (DURATION - NDELAY),
+            '</finishDelaying>',
+
+            '</off>',
+
+            '<finishPlaying>', '_id:' + timedTransition._id, 'state:STATE_PLAYING',
+            'isOn:false', 'runTime:' + logTime, 'startTime:' + logTime,
+            'currentPosition:' + (DURATION - NDELAY),
+            'state:STATE_STOPPED',
+
+            '<fireEvent>', '_id:' + timedTransition._id, 'state:STATE_STOPPED',
+            'isOn:false', 'runTime:' + logTime, 'startTime:' + logTime,
+            'currentPosition:' + (DURATION - NDELAY),
+            'type:timedTransitionEnd',
+            '</fireEvent>',
+
+            '<finishAll/>', '_id:' + timedTransition._id, 'isOn:false',
+            'state:STATE_STOPPED',
+
+            '</finishPlaying>'
           ]);
 
           expect(utils.eventLog).toBeEventLog(
@@ -1932,6 +2299,94 @@ describe('flow', function() {
 
           setTimeout(function() {
             expect(traceLog).toEqual([
+              '<on>', '_id:' + timedTransition._id, 'state:STATE_STOPPED', 'force:false',
+              'isOn:false', 'runTime:0', 'startTime:0', 'currentPosition:0',
+
+              '<fixCurrentPosition>', '_id:' + timedTransition._id, 'state:STATE_STOPPED',
+              'currentPosition:0',
+              'CANCEL', '</fixCurrentPosition>',
+
+              '<abort>', '_id:' + timedTransition._id, 'isOn:false',
+              'CANCEL', '</abort>',
+
+              'state:STATE_DELAYING',
+
+              '<fireEvent>', '_id:' + timedTransition._id, 'state:STATE_DELAYING',
+              'isOn:true', 'runTime:' + logTime, 'startTime:0', 'currentPosition:0',
+              'type:timedTransitionRun',
+              '</fireEvent>',
+
+              '<finishDelaying>', '_id:' + timedTransition._id, 'state:STATE_DELAYING',
+              'isOn:true', 'runTime:' + logTime, 'startTime:0', 'currentPosition:' + NDELAY,
+              'state:STATE_PLAYING',
+
+              '<fireEvent>', '_id:' + timedTransition._id, 'state:STATE_PLAYING',
+              'isOn:true', 'runTime:' + logTime, 'startTime:' + logTime, 'currentPosition:' + NDELAY,
+              'type:timedTransitionStart',
+              '</fireEvent>',
+
+              'durationLeft:' + (DURATION - NDELAY),
+              '</finishDelaying>',
+
+              '</on>',
+
+              '<off>', '_id:' + timedTransition._id, 'state:STATE_PLAYING', 'force:false',
+              'isOn:true', 'runTime:' + logTime, 'startTime:' + logTime, 'currentPosition:' + NDELAY,
+
+              '<fixCurrentPosition>', '_id:' + timedTransition._id, 'state:STATE_PLAYING',
+              'currentPosition:' + NDELAY, 'currentPosition:' + (NDELAY + LESS_PLAY1),
+              '</fixCurrentPosition>',
+
+              '<abort>', '_id:' + timedTransition._id, 'isOn:true',
+              'state:STATE_STOPPED',
+
+              '<fireEvent>', '_id:' + timedTransition._id, 'state:STATE_STOPPED',
+              'isOn:true', 'runTime:' + logTime, 'startTime:' + logTime,
+              'currentPosition:' + (NDELAY + LESS_PLAY1),
+              'type:timedTransitionCancel',
+              '</fireEvent>',
+
+              '</abort>',
+
+              'state:STATE_DELAYING',
+
+              '<fireEvent>', '_id:' + timedTransition._id, 'state:STATE_DELAYING',
+              'isOn:false', 'runTime:' + (logTime + LESS_PLAY1), 'startTime:0',
+              'currentPosition:' + (NDELAY + LESS_PLAY1),
+              'type:timedTransitionRun',
+              '</fireEvent>',
+
+              '<finishDelaying>', '_id:' + timedTransition._id, 'state:STATE_DELAYING',
+              'isOn:false', 'runTime:' + (logTime + LESS_PLAY1), 'startTime:0',
+              'currentPosition:' + (NDELAY + LESS_PLAY1 - NDELAY),
+              'state:STATE_PLAYING',
+
+              '<fireEvent>', '_id:' + timedTransition._id, 'state:STATE_PLAYING',
+              'isOn:false', 'runTime:' + (logTime + LESS_PLAY1), 'startTime:' + (logTime + LESS_PLAY1),
+              'currentPosition:' + (NDELAY + LESS_PLAY1 - NDELAY),
+              'type:timedTransitionStart',
+              '</fireEvent>',
+
+              'durationLeft:' + (NDELAY + LESS_PLAY1 - NDELAY),
+              '</finishDelaying>',
+
+              '</off>',
+
+              '<finishPlaying>', '_id:' + timedTransition._id, 'state:STATE_PLAYING',
+              'isOn:false', 'runTime:' + (logTime + LESS_PLAY1), 'startTime:' + (logTime + LESS_PLAY1),
+              'currentPosition:' + (NDELAY + LESS_PLAY1 - NDELAY),
+              'state:STATE_STOPPED',
+
+              '<fireEvent>', '_id:' + timedTransition._id, 'state:STATE_STOPPED',
+              'isOn:false', 'runTime:' + (logTime + LESS_PLAY1), 'startTime:' + (logTime + LESS_PLAY1),
+              'currentPosition:' + (NDELAY + LESS_PLAY1 - NDELAY),
+              'type:timedTransitionEnd',
+              '</fireEvent>',
+
+              '<finishAll/>', '_id:' + timedTransition._id, 'isOn:false',
+              'state:STATE_STOPPED',
+
+              '</finishPlaying>'
             ]);
 
             expect(utils.eventLog).toBeEventLog(
@@ -1972,6 +2427,99 @@ describe('flow', function() {
 
           setTimeout(function() {
             expect(traceLog).toEqual([
+              '<off>', '_id:' + timedTransition._id, 'state:STATE_STOPPED', 'force:false',
+              'isOn:true', 'runTime:0', 'startTime:0', 'currentPosition:' + DURATION,
+
+              '<fixCurrentPosition>', '_id:' + timedTransition._id, 'state:STATE_STOPPED',
+              'currentPosition:' + DURATION,
+              'CANCEL', '</fixCurrentPosition>',
+
+              '<abort>', '_id:' + timedTransition._id, 'isOn:true',
+              'CANCEL', '</abort>',
+
+              'state:STATE_DELAYING',
+
+              '<fireEvent>', '_id:' + timedTransition._id, 'state:STATE_DELAYING',
+              'isOn:false', 'runTime:' + logTime, 'startTime:0',
+              'currentPosition:' + DURATION,
+              'type:timedTransitionRun',
+              '</fireEvent>',
+
+              '<finishDelaying>', '_id:' + timedTransition._id, 'state:STATE_DELAYING',
+              'isOn:false', 'runTime:' + logTime, 'startTime:0',
+              'currentPosition:' + (DURATION - NDELAY),
+              'state:STATE_PLAYING',
+
+              '<fireEvent>', '_id:' + timedTransition._id, 'state:STATE_PLAYING',
+              'isOn:false', 'runTime:' + logTime, 'startTime:' + logTime,
+              'currentPosition:' + (DURATION - NDELAY),
+              'type:timedTransitionStart',
+              '</fireEvent>',
+
+              'durationLeft:' + (DURATION - NDELAY),
+              '</finishDelaying>',
+
+              '</off>',
+
+              '<on>', '_id:' + timedTransition._id, 'state:STATE_PLAYING', 'force:false',
+              'isOn:false', 'runTime:' + logTime, 'startTime:' + logTime,
+              'currentPosition:' + (DURATION - NDELAY),
+
+              '<fixCurrentPosition>', '_id:' + timedTransition._id, 'state:STATE_PLAYING',
+              'currentPosition:' + (DURATION - NDELAY),
+              'currentPosition:' + (DURATION - NDELAY - LESS_PLAY1),
+              '</fixCurrentPosition>',
+
+              '<abort>', '_id:' + timedTransition._id, 'isOn:false',
+              'state:STATE_STOPPED',
+
+              '<fireEvent>', '_id:' + timedTransition._id, 'state:STATE_STOPPED',
+              'isOn:false', 'runTime:' + logTime, 'startTime:' + logTime,
+              'currentPosition:' + (DURATION - NDELAY - LESS_PLAY1),
+              'type:timedTransitionCancel',
+              '</fireEvent>',
+
+              '</abort>',
+
+              'state:STATE_DELAYING',
+
+              '<fireEvent>', '_id:' + timedTransition._id, 'state:STATE_DELAYING',
+              'isOn:true', 'runTime:' + (logTime + LESS_PLAY1), 'startTime:0',
+              'currentPosition:' + (DURATION - NDELAY - LESS_PLAY1),
+              'type:timedTransitionRun',
+              '</fireEvent>',
+
+              '<finishDelaying>', '_id:' + timedTransition._id, 'state:STATE_DELAYING',
+              'isOn:true', 'runTime:' + (logTime + LESS_PLAY1), 'startTime:0',
+              'currentPosition:' + (DURATION - NDELAY - LESS_PLAY1 + NDELAY),
+              'state:STATE_PLAYING',
+
+              '<fireEvent>', '_id:' + timedTransition._id, 'state:STATE_PLAYING',
+              'isOn:true', 'runTime:' + (logTime + LESS_PLAY1), 'startTime:' + (logTime + LESS_PLAY1),
+              'currentPosition:' + (DURATION - NDELAY - LESS_PLAY1 + NDELAY),
+              'type:timedTransitionStart',
+              '</fireEvent>',
+
+              'durationLeft:' + (DURATION - (DURATION - NDELAY - LESS_PLAY1 + NDELAY)),
+              '</finishDelaying>',
+
+              '</on>',
+
+              '<finishPlaying>', '_id:' + timedTransition._id, 'state:STATE_PLAYING',
+              'isOn:true', 'runTime:' + (logTime + LESS_PLAY1), 'startTime:' + (logTime + LESS_PLAY1),
+              'currentPosition:' + (DURATION - NDELAY - LESS_PLAY1 + NDELAY),
+              'state:STATE_STOPPED',
+
+              '<fireEvent>', '_id:' + timedTransition._id, 'state:STATE_STOPPED',
+              'isOn:true', 'runTime:' + (logTime + LESS_PLAY1), 'startTime:' + (logTime + LESS_PLAY1),
+              'currentPosition:' + (DURATION - NDELAY - LESS_PLAY1 + NDELAY),
+              'type:timedTransitionEnd',
+              '</fireEvent>',
+
+              '<finishAll/>', '_id:' + timedTransition._id, 'isOn:true',
+              'state:STATE_STOPPED',
+
+              '</finishPlaying>'
             ]);
 
             expect(utils.eventLog).toBeEventLog(
@@ -2012,6 +2560,94 @@ describe('flow', function() {
 
           setTimeout(function() {
             expect(traceLog).toEqual([
+              '<on>', '_id:' + timedTransition._id, 'state:STATE_STOPPED', 'force:false',
+              'isOn:false', 'runTime:0', 'startTime:0', 'currentPosition:0',
+
+              '<fixCurrentPosition>', '_id:' + timedTransition._id, 'state:STATE_STOPPED',
+              'currentPosition:0',
+              'CANCEL', '</fixCurrentPosition>',
+
+              '<abort>', '_id:' + timedTransition._id, 'isOn:false',
+              'CANCEL', '</abort>',
+
+              'state:STATE_DELAYING',
+
+              '<fireEvent>', '_id:' + timedTransition._id, 'state:STATE_DELAYING',
+              'isOn:true', 'runTime:' + logTime, 'startTime:0', 'currentPosition:0',
+              'type:timedTransitionRun',
+              '</fireEvent>',
+
+              '<finishDelaying>', '_id:' + timedTransition._id, 'state:STATE_DELAYING',
+              'isOn:true', 'runTime:' + logTime, 'startTime:0', 'currentPosition:' + NDELAY,
+              'state:STATE_PLAYING',
+
+              '<fireEvent>', '_id:' + timedTransition._id, 'state:STATE_PLAYING',
+              'isOn:true', 'runTime:' + logTime, 'startTime:' + logTime, 'currentPosition:' + NDELAY,
+              'type:timedTransitionStart',
+              '</fireEvent>',
+
+              'durationLeft:' + (DURATION - NDELAY),
+              '</finishDelaying>',
+
+              '</on>',
+
+              '<off>', '_id:' + timedTransition._id, 'state:STATE_PLAYING', 'force:false',
+              'isOn:true', 'runTime:' + logTime, 'startTime:' + logTime, 'currentPosition:' + NDELAY,
+
+              '<fixCurrentPosition>', '_id:' + timedTransition._id, 'state:STATE_PLAYING',
+              'currentPosition:' + NDELAY, 'currentPosition:' + (NDELAY + LESS_PLAY2),
+              '</fixCurrentPosition>',
+
+              '<abort>', '_id:' + timedTransition._id, 'isOn:true',
+              'state:STATE_STOPPED',
+
+              '<fireEvent>', '_id:' + timedTransition._id, 'state:STATE_STOPPED',
+              'isOn:true', 'runTime:' + logTime, 'startTime:' + logTime,
+              'currentPosition:' + (NDELAY + LESS_PLAY2),
+              'type:timedTransitionCancel',
+              '</fireEvent>',
+
+              '</abort>',
+
+              'state:STATE_DELAYING',
+
+              '<fireEvent>', '_id:' + timedTransition._id, 'state:STATE_DELAYING',
+              'isOn:false', 'runTime:' + (logTime + LESS_PLAY2), 'startTime:0',
+              'currentPosition:' + (NDELAY + LESS_PLAY2),
+              'type:timedTransitionRun',
+              '</fireEvent>',
+
+              '<finishDelaying>', '_id:' + timedTransition._id, 'state:STATE_DELAYING',
+              'isOn:false', 'runTime:' + (logTime + LESS_PLAY2), 'startTime:0',
+              'currentPosition:' + (NDELAY + LESS_PLAY2 - NDELAY),
+              'state:STATE_PLAYING',
+
+              '<fireEvent>', '_id:' + timedTransition._id, 'state:STATE_PLAYING',
+              'isOn:false', 'runTime:' + (logTime + LESS_PLAY2), 'startTime:' + (logTime + LESS_PLAY2),
+              'currentPosition:' + (NDELAY + LESS_PLAY2 - NDELAY),
+              'type:timedTransitionStart',
+              '</fireEvent>',
+
+              'durationLeft:' + (NDELAY + LESS_PLAY2 - NDELAY),
+              '</finishDelaying>',
+
+              '</off>',
+
+              '<finishPlaying>', '_id:' + timedTransition._id, 'state:STATE_PLAYING',
+              'isOn:false', 'runTime:' + (logTime + LESS_PLAY2), 'startTime:' + (logTime + LESS_PLAY2),
+              'currentPosition:' + (NDELAY + LESS_PLAY2 - NDELAY),
+              'state:STATE_STOPPED',
+
+              '<fireEvent>', '_id:' + timedTransition._id, 'state:STATE_STOPPED',
+              'isOn:false', 'runTime:' + (logTime + LESS_PLAY2), 'startTime:' + (logTime + LESS_PLAY2),
+              'currentPosition:' + (NDELAY + LESS_PLAY2 - NDELAY),
+              'type:timedTransitionEnd',
+              '</fireEvent>',
+
+              '<finishAll/>', '_id:' + timedTransition._id, 'isOn:false',
+              'state:STATE_STOPPED',
+
+              '</finishPlaying>'
             ]);
 
             expect(utils.eventLog).toBeEventLog(
@@ -2052,6 +2688,99 @@ describe('flow', function() {
 
           setTimeout(function() {
             expect(traceLog).toEqual([
+              '<off>', '_id:' + timedTransition._id, 'state:STATE_STOPPED', 'force:false',
+              'isOn:true', 'runTime:0', 'startTime:0', 'currentPosition:' + DURATION,
+
+              '<fixCurrentPosition>', '_id:' + timedTransition._id, 'state:STATE_STOPPED',
+              'currentPosition:' + DURATION,
+              'CANCEL', '</fixCurrentPosition>',
+
+              '<abort>', '_id:' + timedTransition._id, 'isOn:true',
+              'CANCEL', '</abort>',
+
+              'state:STATE_DELAYING',
+
+              '<fireEvent>', '_id:' + timedTransition._id, 'state:STATE_DELAYING',
+              'isOn:false', 'runTime:' + logTime, 'startTime:0',
+              'currentPosition:' + DURATION,
+              'type:timedTransitionRun',
+              '</fireEvent>',
+
+              '<finishDelaying>', '_id:' + timedTransition._id, 'state:STATE_DELAYING',
+              'isOn:false', 'runTime:' + logTime, 'startTime:0',
+              'currentPosition:' + (DURATION - NDELAY),
+              'state:STATE_PLAYING',
+
+              '<fireEvent>', '_id:' + timedTransition._id, 'state:STATE_PLAYING',
+              'isOn:false', 'runTime:' + logTime, 'startTime:' + logTime,
+              'currentPosition:' + (DURATION - NDELAY),
+              'type:timedTransitionStart',
+              '</fireEvent>',
+
+              'durationLeft:' + (DURATION - NDELAY),
+              '</finishDelaying>',
+
+              '</off>',
+
+              '<on>', '_id:' + timedTransition._id, 'state:STATE_PLAYING', 'force:false',
+              'isOn:false', 'runTime:' + logTime, 'startTime:' + logTime,
+              'currentPosition:' + (DURATION - NDELAY),
+
+              '<fixCurrentPosition>', '_id:' + timedTransition._id, 'state:STATE_PLAYING',
+              'currentPosition:' + (DURATION - NDELAY),
+              'currentPosition:' + (DURATION - NDELAY - LESS_PLAY2),
+              '</fixCurrentPosition>',
+
+              '<abort>', '_id:' + timedTransition._id, 'isOn:false',
+              'state:STATE_STOPPED',
+
+              '<fireEvent>', '_id:' + timedTransition._id, 'state:STATE_STOPPED',
+              'isOn:false', 'runTime:' + logTime, 'startTime:' + logTime,
+              'currentPosition:' + (DURATION - NDELAY - LESS_PLAY2),
+              'type:timedTransitionCancel',
+              '</fireEvent>',
+
+              '</abort>',
+
+              'state:STATE_DELAYING',
+
+              '<fireEvent>', '_id:' + timedTransition._id, 'state:STATE_DELAYING',
+              'isOn:true', 'runTime:' + (logTime + LESS_PLAY2), 'startTime:0',
+              'currentPosition:' + (DURATION - NDELAY - LESS_PLAY2),
+              'type:timedTransitionRun',
+              '</fireEvent>',
+
+              '<finishDelaying>', '_id:' + timedTransition._id, 'state:STATE_DELAYING',
+              'isOn:true', 'runTime:' + (logTime + LESS_PLAY2), 'startTime:0',
+              'currentPosition:' + (DURATION - NDELAY - LESS_PLAY2 + NDELAY),
+              'state:STATE_PLAYING',
+
+              '<fireEvent>', '_id:' + timedTransition._id, 'state:STATE_PLAYING',
+              'isOn:true', 'runTime:' + (logTime + LESS_PLAY2), 'startTime:' + (logTime + LESS_PLAY2),
+              'currentPosition:' + (DURATION - NDELAY - LESS_PLAY2 + NDELAY),
+              'type:timedTransitionStart',
+              '</fireEvent>',
+
+              'durationLeft:' + (DURATION - (DURATION - NDELAY - LESS_PLAY2 + NDELAY)),
+              '</finishDelaying>',
+
+              '</on>',
+
+              '<finishPlaying>', '_id:' + timedTransition._id, 'state:STATE_PLAYING',
+              'isOn:true', 'runTime:' + (logTime + LESS_PLAY2), 'startTime:' + (logTime + LESS_PLAY2),
+              'currentPosition:' + (DURATION - NDELAY - LESS_PLAY2 + NDELAY),
+              'state:STATE_STOPPED',
+
+              '<fireEvent>', '_id:' + timedTransition._id, 'state:STATE_STOPPED',
+              'isOn:true', 'runTime:' + (logTime + LESS_PLAY2), 'startTime:' + (logTime + LESS_PLAY2),
+              'currentPosition:' + (DURATION - NDELAY - LESS_PLAY2 + NDELAY),
+              'type:timedTransitionEnd',
+              '</fireEvent>',
+
+              '<finishAll/>', '_id:' + timedTransition._id, 'isOn:true',
+              'state:STATE_STOPPED',
+
+              '</finishPlaying>'
             ]);
 
             expect(utils.eventLog).toBeEventLog(
@@ -2079,6 +2808,7 @@ describe('flow', function() {
 
   describe('delay: -8s', function() {
     var timedTransition,
+      DURATION = 5000,
       WAIT = 1000;
 
     beforeAll(function(done) {
@@ -2092,7 +2822,6 @@ describe('flow', function() {
       timedTransition.off(true);
       setTimeout(function() {
         traceLog.length = 0;
-        var logTime = TimedTransition.roundTime(Date.now());
         utils.initLog();
 
         utils.addLog('ON', timedTransition);
@@ -2100,6 +2829,18 @@ describe('flow', function() {
 
         setTimeout(function() {
           expect(traceLog).toEqual([
+            '<on>', '_id:' + timedTransition._id, 'state:STATE_STOPPED', 'force:false',
+            'isOn:false', 'runTime:0', 'startTime:0', 'currentPosition:0',
+
+            'STOP(over-duration)',
+
+            '<abort>', '_id:' + timedTransition._id, 'isOn:false',
+            'CANCEL', '</abort>',
+
+            '<finishAll/>', '_id:' + timedTransition._id, 'isOn:true',
+            'state:STATE_STOPPED',
+
+            '</on>'
           ]);
 
           expect(utils.eventLog).toBeEventLog(
@@ -2119,7 +2860,6 @@ describe('flow', function() {
       timedTransition.on(true);
       setTimeout(function() {
         traceLog.length = 0;
-        var logTime = TimedTransition.roundTime(Date.now());
         utils.initLog();
 
         utils.addLog('OFF', timedTransition);
@@ -2127,6 +2867,18 @@ describe('flow', function() {
 
         setTimeout(function() {
           expect(traceLog).toEqual([
+            '<off>', '_id:' + timedTransition._id, 'state:STATE_STOPPED', 'force:false',
+            'isOn:true', 'runTime:0', 'startTime:0', 'currentPosition:' + DURATION,
+
+            'STOP(over-duration)',
+
+            '<abort>', '_id:' + timedTransition._id, 'isOn:true',
+            'CANCEL', '</abort>',
+
+            '<finishAll/>', '_id:' + timedTransition._id, 'isOn:false',
+            'state:STATE_STOPPED',
+
+            '</off>'
           ]);
 
           expect(utils.eventLog).toBeEventLog(
@@ -2146,7 +2898,6 @@ describe('flow', function() {
       timedTransition.off(true);
       setTimeout(function() {
         traceLog.length = 0;
-        var logTime = TimedTransition.roundTime(Date.now());
         utils.initLog();
 
         utils.addLog('ON', timedTransition);
@@ -2158,6 +2909,31 @@ describe('flow', function() {
 
           setTimeout(function() {
             expect(traceLog).toEqual([
+              '<on>', '_id:' + timedTransition._id, 'state:STATE_STOPPED', 'force:false',
+              'isOn:false', 'runTime:0', 'startTime:0', 'currentPosition:0',
+
+              'STOP(over-duration)',
+
+              '<abort>', '_id:' + timedTransition._id, 'isOn:false',
+              'CANCEL', '</abort>',
+
+              '<finishAll/>', '_id:' + timedTransition._id, 'isOn:true',
+              'state:STATE_STOPPED',
+
+              '</on>',
+
+              '<off>', '_id:' + timedTransition._id, 'state:STATE_STOPPED', 'force:false',
+              'isOn:true', 'runTime:0', 'startTime:0', 'currentPosition:' + DURATION,
+
+              'STOP(over-duration)',
+
+              '<abort>', '_id:' + timedTransition._id, 'isOn:true',
+              'CANCEL', '</abort>',
+
+              '<finishAll/>', '_id:' + timedTransition._id, 'isOn:false',
+              'state:STATE_STOPPED',
+
+              '</off>'
             ]);
 
             expect(utils.eventLog).toBeEventLog(
@@ -2179,7 +2955,6 @@ describe('flow', function() {
       timedTransition.on(true);
       setTimeout(function() {
         traceLog.length = 0;
-        var logTime = TimedTransition.roundTime(Date.now());
         utils.initLog();
 
         utils.addLog('OFF', timedTransition);
@@ -2191,6 +2966,31 @@ describe('flow', function() {
 
           setTimeout(function() {
             expect(traceLog).toEqual([
+              '<off>', '_id:' + timedTransition._id, 'state:STATE_STOPPED', 'force:false',
+              'isOn:true', 'runTime:0', 'startTime:0', 'currentPosition:' + DURATION,
+
+              'STOP(over-duration)',
+
+              '<abort>', '_id:' + timedTransition._id, 'isOn:true',
+              'CANCEL', '</abort>',
+
+              '<finishAll/>', '_id:' + timedTransition._id, 'isOn:false',
+              'state:STATE_STOPPED',
+
+              '</off>',
+
+              '<on>', '_id:' + timedTransition._id, 'state:STATE_STOPPED', 'force:false',
+              'isOn:false', 'runTime:0', 'startTime:0', 'currentPosition:0',
+
+              'STOP(over-duration)',
+
+              '<abort>', '_id:' + timedTransition._id, 'isOn:false',
+              'CANCEL', '</abort>',
+
+              '<finishAll/>', '_id:' + timedTransition._id, 'isOn:true',
+              'state:STATE_STOPPED',
+
+              '</on>'
             ]);
 
             expect(utils.eventLog).toBeEventLog(
