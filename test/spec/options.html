@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+
+  <script src="/timed-transition.js"></script>
+
+  <style>
+
+.property {
+  -moz-transition-property: margin-top, margin-right, margin-bottom, margin-left;
+  -o-transition-property: margin-top, margin-right, margin-bottom, margin-left;
+  -webkit-transition-property: margin-top, margin-right, margin-bottom, margin-left;
+  transition-property: margin-top, margin-right, margin-bottom, margin-left;
+}
+
+.duration {
+  -moz-transition-duration: 1s, 2s;
+  -o-transition-duration: 1s, 2s;
+  -webkit-transition-duration: 1s, 2s;
+  transition-duration: 1s, 2s;
+}
+
+.delay {
+  -moz-transition-delay: 3s;
+  -o-transition-delay: 3s;
+  -webkit-transition-delay: 3s;
+  transition-delay: 3s;
+}
+
+  </style>
+</head>
+<body>
+
+  <div id="elm-plain"></div>
+
+  <div id="elm-property-class" class="property"></div>
+
+  <div id="elm-property-style" style="
+    -moz-transition-property: padding-top, padding-right, padding-bottom, padding-left;
+    -o-transition-property: padding-top, padding-right, padding-bottom, padding-left;
+    -webkit-transition-property: padding-top, padding-right, padding-bottom, padding-left;
+    transition-property: padding-top, padding-right, padding-bottom, padding-left;
+    "></div>
+
+  <div id="elm-duration-class" class="duration"></div>
+
+  <div id="elm-delay-class" class="delay"></div>
+
+</body>
+</html>
