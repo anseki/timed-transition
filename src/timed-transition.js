@@ -370,7 +370,7 @@ function setOptions(props, newOptions) {
       if (/^[0\.]+$/.test(value)) { // This is invalid for CSS.
         options[option] = '0s';
         props[option] = 0;
-      } else if ((matches = /^(.+)(m)?s$/.exec(value)) &&
+      } else if ((matches = /^(.+?)(m)?s$/.exec(value)) &&
           isFinite((timeValue = parseFloat(matches[1]))) &&
           (option !== 'duration' || timeValue >= 0)) {
         options[option] = `${timeValue}${matches[2] || ''}s`;
