@@ -20,7 +20,8 @@ var utils = (function() {
    */
 
   var TOLERANCE = {time: 100, evtElapsedTime: 0.1},
-    eventLog = [], startTime;
+    eventLog = [], startTime,
+    TimedTransition = window.TimedTransition;
 
   function listener(event) {
     var curTime = Date.now() - startTime, instance = event.timedTransition;
@@ -38,7 +39,7 @@ var utils = (function() {
 
     var timeText = ('00' + (curTime / 1000).toFixed(2)).substr(-5) + 's';
     console.log('%s [%s] <%s> propertyName: %s elapsedTime: %f',
-      window.TimedTransition.STATE_TEXT[instance.state],
+      TimedTransition.STATE_TEXT[instance.state],
       timeText,
       event.type,
       event.propertyName,
@@ -55,7 +56,7 @@ var utils = (function() {
     });
 
     var timeText = ('00' + (curTime / 1000).toFixed(2)).substr(-5) + 's';
-    console.log('%s [%s] %s', window.TimedTransition.STATE_TEXT[instance.state], timeText, message);
+    console.log('%s [%s] %s', TimedTransition.STATE_TEXT[instance.state], timeText, message);
   }
 
   function initLog() {
@@ -65,12 +66,13 @@ var utils = (function() {
   }
 
   function setupListener(target) {
-    ['timedTransitionRun', 'timedTransitionStart', 'timedTransitionEnd', 'timedTransitionCancel']
-      .forEach(function(type) { target.addEventListener(type, listener, true); });
+    ['Run', 'Start', 'End', 'Cancel'].forEach(function(type) {
+      target.addEventListener('timedTransition' + type, listener, true);
+    });
   }
 
   function getInstance(element) {
-    return new window.TimedTransition(element, {
+    return new TimedTransition(element, {
       procToOn: function(force) {
         var classList = window.mClassList(element);
         classList.toggle('force', force);
@@ -143,7 +145,7 @@ var utils = (function() {
       if (!exRec) { return {pass: false, message: '`expected[' + i + ']` is not record'}; }
 
       var recKeys = ['time', 'state'].concat(
-          exRec.state === window.TimedTransition.STATE_PLAYING ? ['isReversing'] : []
+          exRec.state === TimedTransition.STATE_PLAYING ? ['isReversing'] : []
         ).concat(
           typeof exRec.message === 'string' ? ['message'] :
             ['evtType', 'evtPropertyName', 'evtPseudoElement',
