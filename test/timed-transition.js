@@ -415,7 +415,7 @@ function _setOptions(props, newOptions) {
   function parseAsCss(option) {
     var optionValue = newOptions[option];
     return typeof optionValue === 'string' ? optionValue.trim() : newOptions.hasOwnProperty(option) ? // From CSS
-    (getComputedStyle(props.element, '')[_cssprefix2.default.getName('transition-' + option)] || '').split(/\s+/)[typeof optionValue === 'number' ? optionValue : 0].trim() : null;
+    (getComputedStyle(props.element, '')[_cssprefix2.default.getName('transition-' + option)] || '').split(',')[typeof optionValue === 'number' ? optionValue : 0].trim() : null;
   }
 
   // pseudoElement
@@ -426,7 +426,7 @@ function _setOptions(props, newOptions) {
   // property
   {
     var value = parseAsCss('property');
-    if (typeof value === 'string') {
+    if (typeof value === 'string' && value !== 'all' && value !== 'none') {
       options.property = value;
     }
   }

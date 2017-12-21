@@ -343,7 +343,7 @@ function setOptions(props, newOptions) {
     return typeof optionValue === 'string' ? optionValue.trim() :
       newOptions.hasOwnProperty(option) ? // From CSS
         (getComputedStyle(props.element, '')[CSSPrefix.getName(`transition-${option}`)] || '')
-          .split(/\s+/)[typeof optionValue === 'number' ? optionValue : 0].trim() :
+          .split(',')[typeof optionValue === 'number' ? optionValue : 0].trim() :
       null;
   }
 
@@ -355,7 +355,9 @@ function setOptions(props, newOptions) {
   // property
   {
     const value = parseAsCss('property');
-    if (typeof value === 'string') { options.property = value; }
+    if (typeof value === 'string' && value !== 'all' && value !== 'none') {
+      options.property = value;
+    }
   }
 
   // duration, delay
