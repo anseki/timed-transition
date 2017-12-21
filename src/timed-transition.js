@@ -339,12 +339,14 @@ function setOptions(props, newOptions) {
   const options = props.options;
 
   function parseAsCss(option) {
-    const optionValue = newOptions[option];
-    return typeof optionValue === 'string' ? optionValue.trim() :
-      newOptions.hasOwnProperty(option) ? // From CSS
-        (getComputedStyle(props.element, '')[CSSPrefix.getName(`transition-${option}`)] || '')
-          .split(',')[typeof optionValue === 'number' ? optionValue : 0].trim() :
-      null;
+    const optionValue = typeof newOptions[option] === 'number' ? // From CSS
+      (getComputedStyle(props.element, '')[CSSPrefix.getName(`transition-${option}`)] || '')
+        .split(',')[newOptions[option]] :
+      newOptions[option];
+    // [DEBUG]
+    props.lastParseAsCss[option] = typeof optionValue === 'string' ? optionValue.trim() : null;
+    // [/DEBUG]
+    return typeof optionValue === 'string' ? optionValue.trim() : null;
   }
 
   // pseudoElement
@@ -405,6 +407,7 @@ class TimedTransition {
       delay: 0,
       isOn: !!initOn
     };
+    props.lastParseAsCss = {}; // [DEBUG/]
 
     Object.defineProperty(this, '_id', {value: ++insId});
     props._id = this._id;

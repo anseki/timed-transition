@@ -264,12 +264,11 @@ function setOptions(props, newOptions) {
   const options = props.options;
 
   function parseAsCss(option) {
-    const optionValue = newOptions[option];
-    return typeof optionValue === 'string' ? optionValue.trim() :
-      newOptions.hasOwnProperty(option) ? // From CSS
-        (getComputedStyle(props.element, '')[CSSPrefix.getName(`transition-${option}`)] || '')
-          .split(',')[typeof optionValue === 'number' ? optionValue : 0].trim() :
-      null;
+    const optionValue = typeof newOptions[option] === 'number' ? // From CSS
+      (getComputedStyle(props.element, '')[CSSPrefix.getName(`transition-${option}`)] || '')
+        .split(',')[newOptions[option]] :
+      newOptions[option];
+    return typeof optionValue === 'string' ? optionValue.trim() : null;
   }
 
   // pseudoElement
