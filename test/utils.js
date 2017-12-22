@@ -19,7 +19,7 @@ var utils = (function() {
    * @property {boolean} evtCancelable - event.cancelable
    */
 
-  var TOLERANCE = {time: 100, evtElapsedTime: 0.1},
+  var TOLERANCE = {time: 200, evtElapsedTime: 0.2},
     eventLog = [], startTime,
     TimedTransition = window.TimedTransition;
 
