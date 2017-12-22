@@ -2,7 +2,7 @@
 describe('options', function() {
   'use strict';
 
-  var window, document, TimedTransition, insProps, pageDone;
+  var window, document, TimedTransition, insProps, pageDone, avoidList;
 
   beforeAll(function(beforeDone) {
     loadPage('spec/options.html', function(pageWindow, pageDocument, pageBody, done) {
@@ -10,6 +10,11 @@ describe('options', function() {
       document = pageDocument;
       TimedTransition = window.TimedTransition;
       insProps = TimedTransition.insProps;
+
+      // for Webkit bug, getComputedStyle can't get list
+      avoidList =
+        window.getComputedStyle(document.getElementById('elm-duration-class'), '')
+        .transitionDuration !== '1s, 2s';
 
       pageDone = done;
       beforeDone();
@@ -340,14 +345,23 @@ describe('options', function() {
     });
 
     it('Get by class, index', function(done) {
+      if (avoidList) {
+        window.mClassList(document.getElementById('elm-duration-class'))
+          .remove('duration-avoidList-0').add('duration-avoidList-1');
+      }
       var transitionSp =
-        new TimedTransition(document.getElementById('elm-duration-class'), {duration: 1});
+        new TimedTransition(document.getElementById('elm-duration-class'),
+          {duration: avoidList ? 0 : 1});
       expect(insProps[transitionSp._id].lastParseAsCss.duration).toBe('2s');
       expect(transitionSp.duration).toBe('2s');
       expect(insProps[transitionSp._id].options.duration).toBe('2s'); // Passed value
       expect(insProps[transitionSp._id].duration).toBe(2000);
 
       // Re-get
+      if (avoidList) {
+        window.mClassList(document.getElementById('elm-duration-class'))
+          .remove('duration-avoidList-1').add('duration-avoidList-0');
+      }
       insProps[transitionSp._id].lastParseAsCss.duration = '-';
       transitionSp.duration = 0;
       expect(insProps[transitionSp._id].lastParseAsCss.duration).toBe('1s');
@@ -375,6 +389,11 @@ describe('options', function() {
       expect(transitionSp.duration).toBe('1s');
       expect(insProps[transitionSp._id].options.duration).toBe('1s'); // Passed value
       expect(insProps[transitionSp._id].duration).toBe(1000);
+
+      if (avoidList) {
+        window.mClassList(document.getElementById('elm-duration-class'))
+          .remove('duration-avoidList-0', 'duration-avoidList-1');
+      }
 
       done();
     });
@@ -675,7 +694,11 @@ describe('options', function() {
   });
 
   describe('initOn', function() {
-    it('default', function() {
+    it('default', function(done) {
+      if (avoidList) {
+        window.mClassList(document.getElementById('elm-duration-class'))
+          .remove('duration-avoidList-1').add('duration-avoidList-0');
+      }
       var transition = new TimedTransition(document.getElementById('elm-duration-class'));
       expect(insProps[transition._id].duration).toBe(1000);
       expect(insProps[transition._id].delay).toBe(0);
@@ -684,9 +707,20 @@ describe('options', function() {
       expect(insProps[transition._id].runTime).toBe(0);
       expect(insProps[transition._id].startTime).toBe(0);
       expect(insProps[transition._id].currentPosition).toBe(0);
+
+      if (avoidList) {
+        window.mClassList(document.getElementById('elm-duration-class'))
+          .remove('duration-avoidList-0', 'duration-avoidList-1');
+      }
+
+      done();
     });
 
-    it('true', function() {
+    it('true', function(done) {
+      if (avoidList) {
+        window.mClassList(document.getElementById('elm-duration-class'))
+          .remove('duration-avoidList-1').add('duration-avoidList-0');
+      }
       var transition = new TimedTransition(document.getElementById('elm-duration-class'), null, true);
       expect(insProps[transition._id].duration).toBe(1000);
       expect(insProps[transition._id].delay).toBe(0);
@@ -695,6 +729,13 @@ describe('options', function() {
       expect(insProps[transition._id].runTime).toBe(0);
       expect(insProps[transition._id].startTime).toBe(0);
       expect(insProps[transition._id].currentPosition).toBe(1000); // Changed
+
+      if (avoidList) {
+        window.mClassList(document.getElementById('elm-duration-class'))
+          .remove('duration-avoidList-0', 'duration-avoidList-1');
+      }
+
+      done();
     });
   });
 

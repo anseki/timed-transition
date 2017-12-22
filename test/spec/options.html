@@ -4,6 +4,8 @@
   <meta charset="utf-8">
 
   <script src="/timed-transition.js"></script>
+  <script src="/m-class-list/m-class-list.min.js"></script>
+  <script>mClassList.ignoreNative = true;</script>
 
   <style>
 
@@ -19,6 +21,20 @@
   -o-transition-duration: 1s, 2s;
   -webkit-transition-duration: 1s, 2s;
   transition-duration: 1s, 2s;
+}
+
+.duration-avoidList-0 {
+  -moz-transition-duration: 1s;
+  -o-transition-duration: 1s;
+  -webkit-transition-duration: 1s;
+  transition-duration: 1s;
+}
+
+.duration-avoidList-1 {
+  -moz-transition-duration: 2s;
+  -o-transition-duration: 2s;
+  -webkit-transition-duration: 2s;
+  transition-duration: 2s;
 }
 
 .delay {
