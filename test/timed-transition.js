@@ -99,6 +99,7 @@ var STATE_STOPPED = 0,
     EVENT_TYPE_START = PREFIX + 'TransitionStart',
     EVENT_TYPE_END = PREFIX + 'TransitionEnd',
     EVENT_TYPE_CANCEL = PREFIX + 'TransitionCancel',
+    IS_EDGE = '-ms-scroll-limit' in document.documentElement.style && '-ms-ime-align' in document.documentElement.style && !window.navigator.msPointerEnabled,
     isObject = function () {
   var toString = {}.toString,
       fnToString = {}.hasOwnProperty.toString,
@@ -171,6 +172,10 @@ function fireEvent(props, type) {
       bubbles: true,
       cancelable: false
     });
+    // Edge bug, can't set pseudoElement
+    if (IS_EDGE) {
+      event.pseudoElement = props.options.pseudoElement;
+    }
   } catch (error) {
     event = document.createEvent('TransitionEvent');
     event.initTransitionEvent(type, true, false, props.options.property, elapsedTime);
