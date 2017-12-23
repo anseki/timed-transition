@@ -201,7 +201,7 @@ function fixCurrentPosition(props) {
   }
   var playingTime = Date.now() - props.startTime;
   props.currentPosition = props.isOn ? Math.min(props.currentPosition + playingTime, props.duration) : Math.max(props.currentPosition - playingTime, 0);
-  traceLog.push('currentPosition:' + roundTime(props.currentPosition));
+  traceLog.push('currentPosition:' + roundTime(props.currentPosition)); // [DEBUG/]
   traceLog.push('</fixCurrentPosition>'); // [DEBUG/]
 }
 
