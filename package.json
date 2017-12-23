@@ -2,9 +2,17 @@
   "name": "timed-transition",
   "version": "0.0.1",
   "title": "TimedTransition",
-  "description": "xxx",
+  "description": "The simple shim for Transition Events with CSS transitions, that transparently intercepts difference between browsers.",
   "keywords": [
-    "xxx"
+    "shim",
+    "polyfill",
+    "transition",
+    "TransitionEvent",
+    "timer",
+    "transitionrun",
+    "transitionstart",
+    "transitionend",
+    "transitioncancel"
   ],
   "main": "timed-transition.min.js",
   "jsnext:main": "./src/timed-transition.js",
