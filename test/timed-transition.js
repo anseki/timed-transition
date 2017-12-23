@@ -570,6 +570,11 @@ var TimedTransition = function () {
       return insProps[this._id].state;
     }
   }, {
+    key: 'element',
+    get: function get() {
+      return insProps[this._id].element;
+    }
+  }, {
     key: 'isReversing',
     get: function get() {
       return insProps[this._id].isReversing;

@@ -34,6 +34,8 @@ describe('options', function() {
     });
 
     it('default', function(done) {
+      expect(transition.element).toBe(document.getElementById('elm-plain'));
+
       expect(transition.pseudoElement).toBe('');
       expect(insProps[transition._id].options.pseudoElement).toBe(''); // Passed value
 
@@ -168,6 +170,9 @@ describe('options', function() {
     it('Get by class', function(done) {
       var transitionSp =
         new TimedTransition(document.getElementById('elm-property-class'));
+
+      expect(transitionSp.element).toBe(document.getElementById('elm-property-class'));
+
       expect(insProps[transitionSp._id].lastParseAsCss.property).toBe('margin-top');
       expect(transitionSp.property).toBe('margin-top');
       expect(insProps[transitionSp._id].options.property).toBe('margin-top'); // Passed value
@@ -178,6 +183,9 @@ describe('options', function() {
     it('Get by style, index', function(done) {
       var transitionSp =
         new TimedTransition(document.getElementById('elm-property-style'), {property: 2});
+
+      expect(transitionSp.element).toBe(document.getElementById('elm-property-style'));
+
       expect(insProps[transitionSp._id].lastParseAsCss.property).toBe('padding-bottom');
       expect(transitionSp.property).toBe('padding-bottom');
       expect(insProps[transitionSp._id].options.property).toBe('padding-bottom'); // Passed value
@@ -352,6 +360,9 @@ describe('options', function() {
       var transitionSp =
         new TimedTransition(document.getElementById('elm-duration-class'),
           {duration: avoidList ? 0 : 1});
+
+      expect(transitionSp.element).toBe(document.getElementById('elm-duration-class'));
+
       expect(insProps[transitionSp._id].lastParseAsCss.duration).toBe('2s');
       expect(transitionSp.duration).toBe('2s');
       expect(insProps[transitionSp._id].options.duration).toBe('2s'); // Passed value
@@ -540,6 +551,9 @@ describe('options', function() {
     it('Get by class, index', function(done) {
       var transitionSp =
         new TimedTransition(document.getElementById('elm-delay-class'), {delay: 0});
+
+      expect(transitionSp.element).toBe(document.getElementById('elm-delay-class'));
+
       expect(insProps[transitionSp._id].lastParseAsCss.delay).toBe('3s');
       expect(transitionSp.delay).toBe('3s');
       expect(insProps[transitionSp._id].options.delay).toBe('3s'); // Passed value

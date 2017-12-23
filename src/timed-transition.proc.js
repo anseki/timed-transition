@@ -399,6 +399,8 @@ class TimedTransition {
 
   get state() { return insProps[this._id].state; }
 
+  get element() { return insProps[this._id].element; }
+
   get isReversing() { return insProps[this._id].isReversing; }
 
   get pseudoElement() { return insProps[this._id].options.pseudoElement; }
