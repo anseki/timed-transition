@@ -143,7 +143,7 @@ STATE_TEXT[STATE_STOPPED] = 'STATE_STOPPED';
 STATE_TEXT[STATE_DELAYING] = 'STATE_DELAYING';
 STATE_TEXT[STATE_PLAYING] = 'STATE_PLAYING';
 function roundTime(timeValue) {
-  return Math.round(timeValue / 100) * 100;
+  return Math.round(timeValue / 200) * 200;
 } // for traceLog
 // [/DEBUG]
 
