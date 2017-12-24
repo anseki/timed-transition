@@ -38,6 +38,7 @@ const
    * @typedef {Object} props
    * @property {Object} options - Options.
    * @property {Element} element - Target element.
+   * @property {Window} window - Window that conatins target element.
    * @property {number} duration - Milliseconds from `transition-duration`.
    * @property {number} delay - Milliseconds from `transition-delay`.
    * @property {number} state - Current state.
@@ -85,7 +86,7 @@ function fireEvent(props, type) {
 
   let event;
   try {
-    event = new TransitionEvent(type, {
+    event = new props.window.TransitionEvent(type, {
       propertyName: props.options.property,
       pseudoElement: props.options.pseudoElement,
       elapsedTime: elapsedTime,
@@ -95,7 +96,7 @@ function fireEvent(props, type) {
     // Edge bug, can't set pseudoElement
     if (IS_EDGE) { event.pseudoElement = props.options.pseudoElement; }
   } catch (error) {
-    event = document.createEvent('TransitionEvent');
+    event = props.window.document.createEvent('TransitionEvent');
     event.initTransitionEvent(type, true, false, props.options.property, elapsedTime);
     event.pseudoElement = props.options.pseudoElement;
   }
@@ -345,7 +346,8 @@ function setOptions(props, newOptions) {
 
   function parseAsCss(option) {
     const optionValue = typeof newOptions[option] === 'number' ? // From CSS
-      (getComputedStyle(props.element, '')[CSSPrefix.getName(`transition-${option}`)] || '')
+      (props.window.getComputedStyle(props.element, '')[
+          CSSPrefix.getName(`transition-${option}`)] || '')
         .split(',')[newOptions[option]] :
       newOptions[option];
     // [DEBUG]
@@ -418,11 +420,11 @@ class TimedTransition {
     props._id = this._id;
     insProps[this._id] = props;
 
-    if (!element.nodeType || element.nodeType !== Node.ELEMENT_NODE ||
-        element.ownerDocument.defaultView !== window) {
+    if (!element.nodeType || element.nodeType !== Node.ELEMENT_NODE) {
       throw new Error('This `element` is not accepted.');
     }
     props.element = element;
+    props.window = element.ownerDocument.defaultView;
     if (!options) {
       options = {};
     } else if (!isObject(options)) {

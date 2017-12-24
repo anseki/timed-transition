@@ -120,6 +120,7 @@ var STATE_STOPPED = 0,
  * @typedef {Object} props
  * @property {Object} options - Options.
  * @property {Element} element - Target element.
+ * @property {Window} window - Window that conatins target element.
  * @property {number} duration - Milliseconds from `transition-duration`.
  * @property {number} delay - Milliseconds from `transition-delay`.
  * @property {number} state - Current state.
@@ -165,7 +166,7 @@ function fireEvent(props, type) {
 
   var event = void 0;
   try {
-    event = new TransitionEvent(type, {
+    event = new props.window.TransitionEvent(type, {
       propertyName: props.options.property,
       pseudoElement: props.options.pseudoElement,
       elapsedTime: elapsedTime,
@@ -177,7 +178,7 @@ function fireEvent(props, type) {
       event.pseudoElement = props.options.pseudoElement;
     }
   } catch (error) {
-    event = document.createEvent('TransitionEvent');
+    event = props.window.document.createEvent('TransitionEvent');
     event.initTransitionEvent(type, true, false, props.options.property, elapsedTime);
     event.pseudoElement = props.options.pseudoElement;
   }
@@ -419,7 +420,7 @@ function _setOptions(props, newOptions) {
 
   function parseAsCss(option) {
     var optionValue = typeof newOptions[option] === 'number' ? // From CSS
-    (getComputedStyle(props.element, '')[_cssprefix2.default.getName('transition-' + option)] || '').split(',')[newOptions[option]] : newOptions[option];
+    (props.window.getComputedStyle(props.element, '')[_cssprefix2.default.getName('transition-' + option)] || '').split(',')[newOptions[option]] : newOptions[option];
     // [DEBUG]
     props.lastParseAsCss[option] = typeof optionValue === 'string' ? optionValue.trim() : null;
     // [/DEBUG]
@@ -492,10 +493,11 @@ var TimedTransition = function () {
     props._id = this._id;
     insProps[this._id] = props;
 
-    if (!element.nodeType || element.nodeType !== Node.ELEMENT_NODE || element.ownerDocument.defaultView !== window) {
+    if (!element.nodeType || element.nodeType !== Node.ELEMENT_NODE) {
       throw new Error('This `element` is not accepted.');
     }
     props.element = element;
+    props.window = element.ownerDocument.defaultView;
     if (!options) {
       options = {};
     } else if (!isObject(options)) {
