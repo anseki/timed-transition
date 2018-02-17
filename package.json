@@ -17,6 +17,14 @@
   "main": "timed-transition.min.js",
   "module": "./src/timed-transition.js",
   "jsnext:main": "./src/timed-transition.js",
+  "files": [
+    "timed-transition.min.js",
+    "src/*.js",
+    "!src/*.proc.*",
+    "webpack.config.rules.js",
+    "bower.json",
+    "LICENSE-MIT"
+  ],
   "devDependencies": {
     "babel-core": "^6.26.0",
     "babel-loader": "^7.1.2",
