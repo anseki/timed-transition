@@ -15,6 +15,7 @@
     "transitioncancel"
   ],
   "main": "timed-transition.min.js",
+  "module": "./src/timed-transition.js",
   "jsnext:main": "./src/timed-transition.js",
   "devDependencies": {
     "babel-core": "^6.26.0",
