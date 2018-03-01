@@ -659,9 +659,9 @@ TimedTransition.roundTime = roundTime;
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
-/*================================================
+/* ================================================
         DON'T MANUALLY EDIT THIS FILE
-================================================*/
+================================================ */
 
 /*
  * CSSPrefix
