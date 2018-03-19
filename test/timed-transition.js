@@ -45,6 +45,11 @@ var TimedTransition =
 /******/ 		}
 /******/ 	};
 /******/
+/******/ 	// define __esModule on exports
+/******/ 	__webpack_require__.r = function(exports) {
+/******/ 		Object.defineProperty(exports, '__esModule', { value: true });
+/******/ 	};
+/******/
 /******/ 	// getDefaultExport function for compatibility with non-harmony modules
 /******/ 	__webpack_require__.n = function(module) {
 /******/ 		var getter = module && module.__esModule ?
@@ -60,17 +65,209 @@ var TimedTransition =
 /******/ 	// __webpack_public_path__
 /******/ 	__webpack_require__.p = "";
 /******/
+/******/
 /******/ 	// Load entry module and return exports
-/******/ 	return __webpack_require__(__webpack_require__.s = 0);
+/******/ 	return __webpack_require__(__webpack_require__.s = "./src/timed-transition.js");
 /******/ })
 /************************************************************************/
-/******/ ([
-/* 0 */
+/******/ ({
+
+/***/ "./node_modules/cssprefix/cssprefix.mjs":
+/*!**********************************************!*\
+  !*** ./node_modules/cssprefix/cssprefix.mjs ***!
+  \**********************************************/
+/*! exports provided: default */
+/***/ (function(__webpack_module__, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* ================================================
+        DON'T MANUALLY EDIT THIS FILE
+================================================ */
+
+/*
+ * CSSPrefix
+ * https://github.com/anseki/cssprefix
+ *
+ * Copyright (c) 2018 anseki
+ * Licensed under the MIT license.
+ */
+
+function ucf(text) {
+  return text.substr(0, 1).toUpperCase() + text.substr(1);
+}
+
+var PREFIXES = ['webkit', 'ms', 'moz', 'o'],
+    NAME_PREFIXES = PREFIXES.reduce(function (prefixes, prefix) {
+  prefixes.push(prefix);
+  prefixes.push(ucf(prefix));
+  return prefixes;
+}, []),
+    VALUE_PREFIXES = PREFIXES.map(function (prefix) {
+  return '-' + prefix + '-';
+}),
+
+
+/**
+ * Get sample CSSStyleDeclaration.
+ * @returns {CSSStyleDeclaration}
+ */
+getDeclaration = function () {
+  var declaration = void 0;
+  return function () {
+    return declaration = declaration || document.createElement('div').style;
+  };
+}(),
+
+
+/**
+ * Normalize name.
+ * @param {} propName - A name that is normalized.
+ * @returns {string} A normalized name.
+ */
+normalizeName = function () {
+  var rePrefixedName = new RegExp('^(?:' + PREFIXES.join('|') + ')(.)', 'i'),
+      reUc = /[A-Z]/;
+  return function (propName) {
+    return (propName = (propName + '').replace(/\s/g, '').replace(/-([\da-z])/gi, function (str, p1) {
+      return p1.toUpperCase();
+    }) // camelCase
+    // 'ms' and 'Ms' are found by rePrefixedName 'i' option
+    .replace(rePrefixedName, function (str, p1) {
+      return reUc.test(p1) ? p1.toLowerCase() : str;
+    }) // Remove prefix
+    ).toLowerCase() === 'float' ? 'cssFloat' : propName;
+  }; // For old CSSOM
+}(),
+
+
+/**
+ * Normalize value.
+ * @param {} propValue - A value that is normalized.
+ * @returns {string} A normalized value.
+ */
+normalizeValue = function () {
+  var rePrefixedValue = new RegExp('^(?:' + VALUE_PREFIXES.join('|') + ')', 'i');
+  return function (propValue) {
+    return (propValue + '').replace(/\s/g, '').replace(rePrefixedValue, '');
+  };
+}(),
+
+
+/**
+ * Polyfill for `CSS.supports`.
+ * @param {string} propName - A name.
+ * @param {string} propValue - A value.
+ * @returns {boolean} `true` if given pair is accepted.
+ */
+cssSupports = function () {
+  // return window.CSS && window.CSS.supports || ((propName, propValue) => {
+  // `CSS.supports` doesn't find prefixed property.
+  return function (propName, propValue) {
+    var declaration = getDeclaration();
+    // In some browsers, `declaration[prop] = value` updates any property.
+    propName = propName.replace(/[A-Z]/g, function (str) {
+      return '-' + str.toLowerCase();
+    }); // kebab-case
+    declaration.setProperty(propName, propValue);
+    return declaration.getPropertyValue(propName) === propValue;
+  };
+}(),
+    propNames = {},
+    propValues = {}; // Cache
+
+
+function getName(propName) {
+  propName = normalizeName(propName);
+  if (propName && propNames[propName] == null) {
+    var declaration = getDeclaration();
+
+    if (declaration[propName] != null) {
+      // Original
+      propNames[propName] = propName;
+    } else {
+      // Try with prefixes
+      var ucfName = ucf(propName);
+      if (!NAME_PREFIXES.some(function (prefix) {
+        var prefixed = prefix + ucfName;
+        if (declaration[prefixed] != null) {
+          propNames[propName] = prefixed;
+          return true;
+        }
+        return false;
+      })) {
+        propNames[propName] = false;
+      }
+    }
+  }
+  return propNames[propName] || void 0;
+}
+
+function getValue(propName, propValue) {
+  var res = void 0;
+
+  if (!(propName = getName(propName))) {
+    return res;
+  } // Invalid property
+
+  propValues[propName] = propValues[propName] || {};
+  (Array.isArray(propValue) ? propValue : [propValue]).some(function (propValue) {
+    propValue = normalizeValue(propValue);
+
+    if (propValues[propName][propValue] != null) {
+      // Cache
+      if (propValues[propName][propValue] !== false) {
+        res = propValues[propName][propValue];
+        return true;
+      } else {
+        return false; // Continue to next value
+      }
+    }
+
+    if (cssSupports(propName, propValue)) {
+      // Original
+      res = propValues[propName][propValue] = propValue;
+      return true;
+    }
+
+    if (VALUE_PREFIXES.some(function (prefix) {
+      // Try with prefixes
+      var prefixed = prefix + propValue;
+      if (cssSupports(propName, prefixed)) {
+        res = propValues[propName][propValue] = prefixed;
+        return true;
+      }
+      return false;
+    })) {
+      return true;
+    }
+
+    propValues[propName][propValue] = false;
+    return false; // Continue to next value
+  });
+
+  return typeof res === 'string' ? res : void 0; // It might be empty string.
+}
+
+var CSSPrefix = {
+  getName: getName,
+  getValue: getValue
+};
+
+/* harmony default export */ __webpack_exports__["default"] = (CSSPrefix);
+
+/***/ }),
+
+/***/ "./src/timed-transition.js":
+/*!*********************************!*\
+  !*** ./src/timed-transition.js ***!
+  \*********************************/
+/*! exports provided: default */
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
-Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0_cssprefix__ = __webpack_require__(1);
+__webpack_require__.r(__webpack_exports__);
+/* harmony import */ var cssprefix__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! cssprefix */ "./node_modules/cssprefix/cssprefix.mjs");
 var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
 
 function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
@@ -414,7 +611,7 @@ function _setOptions(props, newOptions) {
 
   function parseAsCss(option) {
     var optionValue = typeof newOptions[option] === 'number' ? // From CSS
-    (props.window.getComputedStyle(props.element, '')[__WEBPACK_IMPORTED_MODULE_0_cssprefix__["a" /* default */].getName('transition-' + option)] || '').split(',')[newOptions[option]] : newOptions[option];
+    (props.window.getComputedStyle(props.element, '')[cssprefix__WEBPACK_IMPORTED_MODULE_0__["default"].getName('transition-' + option)] || '').split(',')[newOptions[option]] : newOptions[option];
     // [DEBUG]
     props.lastParseAsCss[option] = typeof optionValue === 'string' ? optionValue.trim() : null;
     // [/DEBUG]
@@ -654,186 +851,7 @@ TimedTransition.roundTime = roundTime;
 
 /* harmony default export */ __webpack_exports__["default"] = (TimedTransition);
 
-/***/ }),
-/* 1 */
-/***/ (function(module, __webpack_exports__, __webpack_require__) {
-
-"use strict";
-/* ================================================
-        DON'T MANUALLY EDIT THIS FILE
-================================================ */
-
-/*
- * CSSPrefix
- * https://github.com/anseki/cssprefix
- *
- * Copyright (c) 2018 anseki
- * Licensed under the MIT license.
- */
-
-function ucf(text) {
-  return text.substr(0, 1).toUpperCase() + text.substr(1);
-}
-
-var PREFIXES = ['webkit', 'ms', 'moz', 'o'],
-    NAME_PREFIXES = PREFIXES.reduce(function (prefixes, prefix) {
-  prefixes.push(prefix);
-  prefixes.push(ucf(prefix));
-  return prefixes;
-}, []),
-    VALUE_PREFIXES = PREFIXES.map(function (prefix) {
-  return '-' + prefix + '-';
-}),
-
-
-/**
- * Get sample CSSStyleDeclaration.
- * @returns {CSSStyleDeclaration}
- */
-getDeclaration = function () {
-  var declaration = void 0;
-  return function () {
-    return declaration = declaration || document.createElement('div').style;
-  };
-}(),
-
-
-/**
- * Normalize name.
- * @param {} propName - A name that is normalized.
- * @returns {string} A normalized name.
- */
-normalizeName = function () {
-  var rePrefixedName = new RegExp('^(?:' + PREFIXES.join('|') + ')(.)', 'i'),
-      reUc = /[A-Z]/;
-  return function (propName) {
-    return (propName = (propName + '').replace(/\s/g, '').replace(/-([\da-z])/gi, function (str, p1) {
-      return p1.toUpperCase();
-    }) // camelCase
-    // 'ms' and 'Ms' are found by rePrefixedName 'i' option
-    .replace(rePrefixedName, function (str, p1) {
-      return reUc.test(p1) ? p1.toLowerCase() : str;
-    }) // Remove prefix
-    ).toLowerCase() === 'float' ? 'cssFloat' : propName;
-  }; // For old CSSOM
-}(),
-
-
-/**
- * Normalize value.
- * @param {} propValue - A value that is normalized.
- * @returns {string} A normalized value.
- */
-normalizeValue = function () {
-  var rePrefixedValue = new RegExp('^(?:' + VALUE_PREFIXES.join('|') + ')', 'i');
-  return function (propValue) {
-    return (propValue + '').replace(/\s/g, '').replace(rePrefixedValue, '');
-  };
-}(),
-
-
-/**
- * Polyfill for `CSS.supports`.
- * @param {string} propName - A name.
- * @param {string} propValue - A value.
- * @returns {boolean} `true` if given pair is accepted.
- */
-cssSupports = function () {
-  // return window.CSS && window.CSS.supports || ((propName, propValue) => {
-  // `CSS.supports` doesn't find prefixed property.
-  return function (propName, propValue) {
-    var declaration = getDeclaration();
-    // In some browsers, `declaration[prop] = value` updates any property.
-    propName = propName.replace(/[A-Z]/g, function (str) {
-      return '-' + str.toLowerCase();
-    }); // kebab-case
-    declaration.setProperty(propName, propValue);
-    return declaration.getPropertyValue(propName) === propValue;
-  };
-}(),
-    propNames = {},
-    propValues = {}; // Cache
-
-
-function getName(propName) {
-  propName = normalizeName(propName);
-  if (propName && propNames[propName] == null) {
-    var declaration = getDeclaration();
-
-    if (declaration[propName] != null) {
-      // Original
-      propNames[propName] = propName;
-    } else {
-      // Try with prefixes
-      var ucfName = ucf(propName);
-      if (!NAME_PREFIXES.some(function (prefix) {
-        var prefixed = prefix + ucfName;
-        if (declaration[prefixed] != null) {
-          propNames[propName] = prefixed;
-          return true;
-        }
-        return false;
-      })) {
-        propNames[propName] = false;
-      }
-    }
-  }
-  return propNames[propName] || void 0;
-}
-
-function getValue(propName, propValue) {
-  var res = void 0;
-
-  if (!(propName = getName(propName))) {
-    return res;
-  } // Invalid property
-
-  propValues[propName] = propValues[propName] || {};
-  (Array.isArray(propValue) ? propValue : [propValue]).some(function (propValue) {
-    propValue = normalizeValue(propValue);
-
-    if (propValues[propName][propValue] != null) {
-      // Cache
-      if (propValues[propName][propValue] !== false) {
-        res = propValues[propName][propValue];
-        return true;
-      } else {
-        return false; // Continue to next value
-      }
-    }
-
-    if (cssSupports(propName, propValue)) {
-      // Original
-      res = propValues[propName][propValue] = propValue;
-      return true;
-    }
-
-    if (VALUE_PREFIXES.some(function (prefix) {
-      // Try with prefixes
-      var prefixed = prefix + propValue;
-      if (cssSupports(propName, prefixed)) {
-        res = propValues[propName][propValue] = prefixed;
-        return true;
-      }
-      return false;
-    })) {
-      return true;
-    }
-
-    propValues[propName][propValue] = false;
-    return false; // Continue to next value
-  });
-
-  return typeof res === 'string' ? res : void 0; // It might be empty string.
-}
-
-var CSSPrefix = {
-  getName: getName,
-  getValue: getValue
-};
-
-/* harmony default export */ __webpack_exports__["a"] = (CSSPrefix);
-
 /***/ })
-/******/ ])["default"];
+
+/******/ })["default"];
 //# sourceMappingURL=timed-transition.js.map
