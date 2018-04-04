@@ -15,10 +15,10 @@
     "transitioncancel"
   ],
   "main": "timed-transition.min.js",
-  "module": "timed-transition.mjs",
-  "jsnext:main": "timed-transition.mjs",
+  "module": "timed-transition.esm.js",
+  "jsnext:main": "timed-transition.esm.js",
   "files": [
-    "timed-transition?(-debug).@(min.js|mjs)",
+    "timed-transition?(-debug).@(min.js|esm.js)",
     "bower.json"
   ],
   "devDependencies": {
