@@ -72,12 +72,12 @@ var TimedTransition =
 /************************************************************************/
 /******/ ({
 
-/***/ "./node_modules/cssprefix/cssprefix.mjs":
-/*!**********************************************!*\
-  !*** ./node_modules/cssprefix/cssprefix.mjs ***!
-  \**********************************************/
+/***/ "./node_modules/cssprefix/cssprefix.esm.js":
+/*!*************************************************!*\
+  !*** ./node_modules/cssprefix/cssprefix.esm.js ***!
+  \*************************************************/
 /*! exports provided: default */
-/***/ (function(__webpack_module__, __webpack_exports__, __webpack_require__) {
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
 __webpack_require__.r(__webpack_exports__);
@@ -267,7 +267,7 @@ var CSSPrefix = {
 
 "use strict";
 __webpack_require__.r(__webpack_exports__);
-/* harmony import */ var cssprefix__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! cssprefix */ "./node_modules/cssprefix/cssprefix.mjs");
+/* harmony import */ var cssprefix__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! cssprefix */ "./node_modules/cssprefix/cssprefix.esm.js");
 var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
 
 function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
