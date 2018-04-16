@@ -1,4 +1,3 @@
-
 describe('child window', function() {
   'use strict';
 
@@ -31,7 +30,7 @@ describe('child window', function() {
         // for Webkit bug, getComputedStyle can't get list
         avoidList =
           frameWindow.getComputedStyle(frameDocument.getElementById('elm-duration-class'), '')
-          .transitionDuration !== '1s, 2s';
+            .transitionDuration !== '1s, 2s';
         beforeDone();
       }
       // Wait for child frame
@@ -678,8 +677,10 @@ describe('child window', function() {
 
     describe('no delay', function() {
       var transition,
-        DURATION = 5000, DURATION_S = DURATION / 1000,
-        LESS_PLAY = 2000, LESS_PLAY_S = LESS_PLAY / 1000,
+        DURATION = 5000,
+        DURATION_S = DURATION / 1000,
+        LESS_PLAY = 2000,
+        LESS_PLAY_S = LESS_PLAY / 1000,
         WAIT = 1000;
 
       beforeAll(function(done) {

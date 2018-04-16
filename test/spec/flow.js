@@ -1,4 +1,3 @@
-
 describe('flow', function() {
   'use strict';
 
@@ -29,8 +28,10 @@ describe('flow', function() {
 
   describe('no delay', function() {
     var transition,
-      DURATION = 5000, DURATION_S = DURATION / 1000,
-      LESS_PLAY = 2000, LESS_PLAY_S = LESS_PLAY / 1000,
+      DURATION = 5000,
+      DURATION_S = DURATION / 1000,
+      LESS_PLAY = 2000,
+      LESS_PLAY_S = LESS_PLAY / 1000,
       WAIT = 1000;
 
     beforeAll(function(done) {
@@ -1178,10 +1179,12 @@ describe('flow', function() {
 
   describe('delay: 3s', function() {
     var transition,
-      DURATION = 5000, DURATION_S = DURATION / 1000,
+      DURATION = 5000,
+      DURATION_S = DURATION / 1000,
       DELAY = 3000,
       LESS_DELAY = DELAY - 1000,
-      LESS_PLAY = 2000, LESS_PLAY_S = LESS_PLAY / 1000,
+      LESS_PLAY = 2000,
+      LESS_PLAY_S = LESS_PLAY / 1000,
       WAIT = 1000;
 
     beforeAll(function(done) {
@@ -2234,9 +2237,12 @@ describe('flow', function() {
 
   describe('delay: -3s', function() {
     var transition,
-      DURATION = 5000, DURATION_S = DURATION / 1000,
-      NDELAY = 3000, NDELAY_S = NDELAY / 1000,
-      LESS_PLAY = 1000, LESS_PLAY_S = LESS_PLAY / 1000;
+      DURATION = 5000,
+      DURATION_S = DURATION / 1000,
+      NDELAY = 3000,
+      NDELAY_S = NDELAY / 1000,
+      LESS_PLAY = 1000,
+      LESS_PLAY_S = LESS_PLAY / 1000;
 
     beforeAll(function(done) {
       var element = document.getElementById('target-delay-m3s');
@@ -2662,10 +2668,14 @@ describe('flow', function() {
 
   describe('delay: -1s', function() {
     var transition,
-      DURATION = 5000, DURATION_S = DURATION / 1000,
-      NDELAY = 1000, NDELAY_S = NDELAY / 1000,
-      LESS_PLAY1 = 1000, LESS_PLAY1_S = LESS_PLAY1 / 1000,
-      LESS_PLAY2 = 3000, LESS_PLAY2_S = LESS_PLAY2 / 1000;
+      DURATION = 5000,
+      DURATION_S = DURATION / 1000,
+      NDELAY = 1000,
+      NDELAY_S = NDELAY / 1000,
+      LESS_PLAY1 = 1000,
+      LESS_PLAY1_S = LESS_PLAY1 / 1000,
+      LESS_PLAY2 = 3000,
+      LESS_PLAY2_S = LESS_PLAY2 / 1000;
 
     beforeAll(function(done) {
       var element = document.getElementById('target-delay-m1s');

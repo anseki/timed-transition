@@ -277,8 +277,8 @@ function _setOptions(props, newOptions) {
   var options = props.options;
 
   function parseAsCss(option) {
-    var optionValue = typeof newOptions[option] === 'number' ? // From CSS
-    (props.window.getComputedStyle(props.element, '')[CSSPrefix.getName('transition-' + option)] || '').split(',')[newOptions[option]] : newOptions[option];
+    var optionValue = typeof newOptions[option] === 'number' // From CSS
+    ? (props.window.getComputedStyle(props.element, '')[CSSPrefix.getName('transition-' + option)] || '').split(',')[newOptions[option]] : newOptions[option];
     return typeof optionValue === 'string' ? optionValue.trim() : null;
   }
 
@@ -301,7 +301,7 @@ function _setOptions(props, newOptions) {
     if (typeof value === 'string') {
       var matches = void 0,
           timeValue = void 0;
-      if (/^[0\.]+$/.test(value)) {
+      if (/^[0.]+$/.test(value)) {
         // This is invalid for CSS.
         options[option] = '0s';
         props[option] = 0;

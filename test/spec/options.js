@@ -1,4 +1,3 @@
-
 describe('options', function() {
   'use strict';
 
@@ -14,7 +13,7 @@ describe('options', function() {
       // for Webkit bug, getComputedStyle can't get list
       avoidList =
         window.getComputedStyle(document.getElementById('elm-duration-class'), '')
-        .transitionDuration !== '1s, 2s';
+          .transitionDuration !== '1s, 2s';
 
       pageDone = done;
       beforeDone();

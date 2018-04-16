@@ -13,7 +13,9 @@
 import CSSPrefix from 'cssprefix';
 
 const
-  STATE_STOPPED = 0, STATE_DELAYING = 1, STATE_PLAYING = 2,
+  STATE_STOPPED = 0,
+  STATE_DELAYING = 1,
+  STATE_PLAYING = 2,
 
   PREFIX = 'timed',
   EVENT_TYPE_RUN = `${PREFIX}TransitionRun`,
@@ -25,7 +27,8 @@ const
     '-ms-ime-align' in document.documentElement.style && !window.navigator.msPointerEnabled,
 
   isObject = (() => {
-    const toString = {}.toString, fnToString = {}.hasOwnProperty.toString,
+    const toString = {}.toString,
+      fnToString = {}.hasOwnProperty.toString,
       objFnString = fnToString.call(Object);
     return obj => {
       let proto, constr;
@@ -69,8 +72,8 @@ function fireEvent(props, type) {
   const initTime = Math.min(Math.max(-props.delay, 0), props.duration),
     elapsedTime = (initTime +
       // The value for transitionend might NOT be transition-duration. (csswg.org may be wrong)
-      ((type === EVENT_TYPE_END || type === EVENT_TYPE_CANCEL) && props.startTime ?
-        Date.now() - props.startTime : 0)
+      ((type === EVENT_TYPE_END || type === EVENT_TYPE_CANCEL) && props.startTime
+        ? Date.now() - props.startTime : 0)
     ) / 1000;
 
   let event;
@@ -78,7 +81,7 @@ function fireEvent(props, type) {
     event = new props.window.TransitionEvent(type, {
       propertyName: props.options.property,
       pseudoElement: props.options.pseudoElement,
-      elapsedTime: elapsedTime,
+      elapsedTime,
       bubbles: true,
       cancelable: false
     });
@@ -102,8 +105,8 @@ function fixCurrentPosition(props) {
     return;
   }
   const playingTime = Date.now() - props.startTime;
-  props.currentPosition = props.isOn ?
-    Math.min(props.currentPosition + playingTime, props.duration) :
+  props.currentPosition = props.isOn
+    ? Math.min(props.currentPosition + playingTime, props.duration) :
     Math.max(props.currentPosition - playingTime, 0);
 }
 
@@ -269,9 +272,9 @@ function setOptions(props, newOptions) {
   const options = props.options;
 
   function parseAsCss(option) {
-    const optionValue = typeof newOptions[option] === 'number' ? // From CSS
-      (props.window.getComputedStyle(props.element, '')[
-          CSSPrefix.getName(`transition-${option}`)] || '')
+    const optionValue = typeof newOptions[option] === 'number' // From CSS
+      ? (props.window.getComputedStyle(props.element, '')[
+        CSSPrefix.getName(`transition-${option}`)] || '')
         .split(',')[newOptions[option]] :
       newOptions[option];
     return typeof optionValue === 'string' ? optionValue.trim() : null;
@@ -295,7 +298,7 @@ function setOptions(props, newOptions) {
     const value = parseAsCss(option);
     if (typeof value === 'string') {
       let matches, timeValue;
-      if (/^[0\.]+$/.test(value)) { // This is invalid for CSS.
+      if (/^[0.]+$/.test(value)) { // This is invalid for CSS.
         options[option] = '0s';
         props[option] = 0;
       } else if ((matches = /^(.+?)(m)?s$/.exec(value)) &&

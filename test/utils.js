@@ -1,5 +1,6 @@
 /* exported utils */
 /* eslint-env browser */
+/* eslint no-var: "off", prefer-arrow-callback: "off", object-shorthand: "off" */
 
 var utils = (function() {
   'use strict';
@@ -20,11 +21,13 @@ var utils = (function() {
    */
 
   var TOLERANCE = {time: 200, evtElapsedTime: 0.2},
-    eventLog = [], startTime,
-    TimedTransition = window.TimedTransition;
+    eventLog = [],
+    TimedTransition = window.TimedTransition,
+    startTime;
 
   function listener(event) {
-    var curTime = Date.now() - startTime, instance = event.timedTransition;
+    var curTime = Date.now() - startTime,
+      instance = event.timedTransition;
     eventLog.push({
       time: curTime,
       state: instance.state,
@@ -96,10 +99,10 @@ var utils = (function() {
   function makeExpectedLog(propertyName, pseudoElement, bubbles, cancelable, logArray) {
     return logArray.reduce(function(expectedLog, recArray) {
       var recHash = ['time', 'state', 'isReversing', 'evtType', 'evtElapsedTime', 'message']
-        .reduce(function(recHash, recKey, i) {
-          recHash[recKey] = recArray[i];
-          return recHash;
-        }, {}),
+          .reduce(function(recHash, recKey, i) {
+            recHash[recKey] = recArray[i];
+            return recHash;
+          }, {}),
         rec = {
           // Common
           time: recHash.time,
@@ -140,7 +143,8 @@ var utils = (function() {
 
     var recLen = Math.max(actual.length, expected.length);
     for (var i = 0; i < recLen; i++) {
-      var acRec = actual[i], exRec = expected[i];
+      var acRec = actual[i],
+        exRec = expected[i];
       if (!acRec) { return {pass: false, message: '`actual[' + i + ']` is not record'}; }
       if (!exRec) { return {pass: false, message: '`expected[' + i + ']` is not record'}; }
 
@@ -148,13 +152,15 @@ var utils = (function() {
           exRec.state === TimedTransition.STATE_PLAYING ? ['isReversing'] : []
         ).concat(
           typeof exRec.message === 'string' ? ['message'] :
-            ['evtType', 'evtPropertyName', 'evtPseudoElement',
+          ['evtType', 'evtPropertyName', 'evtPseudoElement',
             'evtElapsedTime', 'evtBubbles', 'evtCancelable']
         ),
         keysLen = recKeys.length;
 
       for (var j = 0; j < keysLen; j++) {
-        var recKey = recKeys[j], acValue = acRec[recKey], exValue = exRec[recKey];
+        var recKey = recKeys[j],
+          acValue = acRec[recKey],
+          exValue = exRec[recKey];
         // Type
         if ((typeof acValue) !== types[recKey]) {
           return {pass: false,
