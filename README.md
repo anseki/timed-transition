@@ -111,7 +111,7 @@ transition = new TimedTransition(element[, options[, initOn]])
 
 The `element` argument is an element that transitions are applied and events are dispatched.
 
-The `options` argument is an Object that can have properties as [options](#options). You can also change the options by [`setOptions`](#setoptions) or [`on`](#on) methods or [properties](#properties) of the TimedTransition instance.  
+The `options` argument is an Object that can have properties as [options](#options) (and [`window`](#window-option) option). You can also change the options by [`setOptions`](#setoptions) or [`on`](#on) methods or [properties](#properties) of the TimedTransition instance.  
 For example, construct new TimedTransition instance with `duration` option:
 
 ```js
@@ -126,6 +126,14 @@ element.style.marginLeft = '600px';
 var transition = new TimedTransition(element, null, true);
 // TimedTransition regards current value as a changed value, not an initial value.
 ```
+
+### `window` option
+
+By default, TimedTransition tries to get a window that contains target element. If it couldn't get a window (e.g. you specified SVG element that is not added to the document yet), it gets the current window.  
+Therefore, you usually don't have to specify a window.  
+If another window is specified for `window` option of the constructor, it uses that instead.
+
+Note that this is an option for constructor, that is, you can not change this after.
 
 ## Methods
 
