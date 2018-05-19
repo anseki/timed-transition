@@ -45,7 +45,7 @@ const
    * @typedef {Object} props
    * @property {Object} options - Options.
    * @property {Element} element - Target element.
-   * @property {Window} window - Window that conatins target element.
+   * @property {Window} window - Window that contains target element.
    * @property {number} duration - Milliseconds from `transition-duration`.
    * @property {number} delay - Milliseconds from `transition-delay`.
    * @property {number} state - Current state.
