@@ -347,12 +347,12 @@ class TimedTransition {
       throw new Error('This `element` is not accepted.');
     }
     props.element = element;
-    props.window = element.ownerDocument.defaultView;
     if (!options) {
       options = {};
     } else if (!isObject(options)) {
       throw new Error('Invalid options.');
     }
+    props.window = element.ownerDocument.defaultView || options.window || window;
 
     // Default options
     if (!options.hasOwnProperty('property')) { options.property = 0; }

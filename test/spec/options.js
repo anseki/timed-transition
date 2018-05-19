@@ -752,4 +752,38 @@ describe('options', function() {
     });
   });
 
+  describe('window', function() {
+    it('should get window via element.ownerDocument.defaultView', function() {
+      var element = document.createElement('div'),
+        transition = new TimedTransition(element);
+      expect(element.ownerDocument.defaultView).toBe(window); // element: HTML Element
+      expect(insProps[transition._id].window).toBe(element.ownerDocument.defaultView); // defaultView
+    });
+
+    it('should get window via current window', function() {
+      // Fragment
+      var frgSvg = (new DOMParser()).parseFromString('<svg xmlns="http://www.w3.org/2000/svg" version="1.1"></svg>', 'image/svg+xml').documentElement,
+        element = frgSvg.cloneNode(true),
+        transition = new TimedTransition(element);
+      expect(element.ownerDocument.defaultView).toBe(null); // element: SVG Element
+      expect(insProps[transition._id].window).toBe(window); // current window
+    });
+
+    it('should get window via options.window', function() {
+      // Fragment
+      var frgSvg = (new DOMParser()).parseFromString('<svg xmlns="http://www.w3.org/2000/svg" version="1.1"></svg>', 'image/svg+xml').documentElement,
+        element = frgSvg.cloneNode(true),
+        optWin = 'WINDOW',
+        transition = new TimedTransition(element, {
+          window: optWin,
+          // To avoid calling getComputedStyle
+          property: 'PROP',
+          duration: 'DUR',
+          delay: 'DEL'
+        });
+      expect(element.ownerDocument.defaultView).toBe(null); // element: SVG Element
+      expect(insProps[transition._id].window).toBe(optWin); // options.window
+    });
+  });
+
 });
