@@ -176,6 +176,15 @@ self = transition.setOptions(options)
 Set one or more options.  
 The `options` argument is an Object that can have properties as [options](#options).
 
+### `remove`
+
+```js
+transition.remove()
+```
+
+Remove the current TimedTransition instance.  
+Never use the removed instance.
+
 ## Options
 
 ### <a name="options-property"></a>`property`

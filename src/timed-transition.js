@@ -443,6 +443,12 @@ class TimedTransition {
     finishAll(props);
   }
 
+  remove() {
+    const props = insProps[this._id];
+    clearTimeout(props.timer);
+    delete insProps[this._id];
+  }
+
   /**
    * @param {Object} options - New options.
    * @returns {TimedTransition} Current instance itself.
