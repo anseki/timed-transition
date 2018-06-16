@@ -140,7 +140,7 @@ Note that this is an option for constructor, that is, you can not change this af
 ### `on`
 
 ```js
-self = transition.on([force][, options])
+self = transition.on([force][, options][, arg1, arg2...])
 ```
 
 Make the transition run to become the changed CSS property.  
@@ -155,10 +155,19 @@ If `options` argument is specified, call [`setOptions`](#setoptions) method and 
 transition.setOptions(options).on();
 ```
 
+You can specify one or more additional arguments as `arg1, arg2...`, and these are passed to the `procToOn` function.  
+If you specify these, you must specify `force` and `options` arguments even if those are `undefine` or `null`. For example:
+
+```js
+transition.on(false, null, 'ARG-1', 'ARG-2');
+```
+
+See [`procToOn`](#options-proctoon-proctooff) option for these arguments.
+
 ### `off`
 
 ```js
-self = transition.off([force][, options])
+self = transition.off([force][, options][, arg1, arg2...])
 ```
 
 Make the transition run to become the initial CSS property.  
@@ -172,6 +181,15 @@ If `options` argument is specified, call [`setOptions`](#setoptions) method and 
 ```js
 transition.setOptions(options).off();
 ```
+
+You can specify one or more additional arguments as `arg1, arg2...`, and these are passed to the `procToOff` function.  
+If you specify these, you must specify `force` and `options` arguments even if those are `undefine` or `null`. For example:
+
+```js
+transition.off(false, null, 'ARG-1', 'ARG-2');
+```
+
+See [`procToOff`](#options-proctoon-proctooff) option for these arguments.
 
 ### `setOptions`
 
@@ -241,7 +259,7 @@ This can be a number or a string and it is parsed by the same way as [`property`
 *Type:* function or `undefined`  
 *Default:* `undefined`
 
-Functions to change a CSS property that is animated. The `procToOn` function is called by [`on`](#on) method, and the `procToOff` function is called by [`off`](#off) method.  
+Functions to change a CSS property that is animated (or, it add or remove class-name). The `procToOn` function is called by [`on`](#on) method, and the `procToOff` function is called by [`off`](#off) method.  
 These are used to get the timing of the events right with the transition. Therefore, changing the CSS property in these functions is better than changing it at other point.
 
 These functions might be passed `true` for `force` argument that is first argument. That is `force` argument that is passed to [`on`](#on) or [`off`](#off) method. The `true` means that changing the CSS property immediately without the transition is required.
@@ -262,6 +280,21 @@ transition.setOptions({
     this.element.style.marginLeft = '0';
   }
 });
+```
+
+If you passed one or more additional arguments to [`on`](#on) or [`off`](#off) method, these also are passed as third argument or more. You can use these to do something with variable parameters.
+
+For example:
+
+```js
+transition.procToOn = function(force, left, top) {
+  // ...
+  this.element.style.left = left + 'px';
+  this.element.style.top = top + 'px';
+};
+
+// START Transition
+transition.on(false, null, 200, 300); // Move to (left: 200, top: 300)
 ```
 
 Note that you should consider cross-browser compatibility if you will use CSS `transition-*` properties or `element.classList`. See "[Cross-Browser](#cross-browser)".
