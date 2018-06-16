@@ -158,7 +158,7 @@ transition.setOptions(options).on();
 ### `off`
 
 ```js
-self = transition.off([force])
+self = transition.off([force][, options])
 ```
 
 Make the transition run to become the initial CSS property.  
@@ -166,6 +166,12 @@ If a function is specified for the [`procToOff`](#options-proctoon-proctooff) op
 
 If `true` is specified for `force` argument, change the state immediately without the transition. For example, this is used to hide something immediately.  
 The `procToOff` function is called with `force` argument. Then, `timedTransitionCancel` event is fired if the transition is running now, and other events are not fired.
+
+If `options` argument is specified, call [`setOptions`](#setoptions) method and make the transition run. It works the same as:
+
+```js
+transition.setOptions(options).off();
+```
 
 ### `setOptions`
 
