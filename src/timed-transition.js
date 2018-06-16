@@ -480,9 +480,16 @@ class TimedTransition {
   /**
    * Set 'off'.
    * @param {boolean} [force] - Set `off` it immediately without transition.
+   * @param {Object} [options] - New options.
    * @returns {TimedTransition} Current instance itself.
    */
-  off(force) {
+  off(force, options) {
+    if (arguments.length < 2 && typeof force !== 'boolean') {
+      options = force;
+      force = false;
+    }
+
+    this.setOptions(options);
     off(insProps[this._id], force);
     return this;
   }
