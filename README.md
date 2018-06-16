@@ -111,7 +111,7 @@ transition = new TimedTransition(element[, options[, initOn]])
 
 The `element` argument is an element that transitions are applied and events are dispatched.
 
-The `options` argument is an Object that can have properties as [options](#options) (and [`window`](#window-option) option). You can also change the options by [`setOptions`](#setoptions) or [`on`](#on) methods or [properties](#properties) of the TimedTransition instance.  
+The `options` argument is an Object that can have properties as [options](#options) (and [`window`](#window-option) option). You can also change the options by [`setOptions`](#setoptions) method, [`on`](#on) method, [`off`](#off) method or [properties](#properties) of the TimedTransition instance.  
 For example, construct new TimedTransition instance with `duration` option:
 
 ```js
