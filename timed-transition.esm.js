@@ -418,12 +418,19 @@ var TimedTransition = function () {
     /**
      * Set 'off'.
      * @param {boolean} [force] - Set `off` it immediately without transition.
+     * @param {Object} [options] - New options.
      * @returns {TimedTransition} Current instance itself.
      */
 
   }, {
     key: 'off',
-    value: function off(force) {
+    value: function off(force, options) {
+      if (arguments.length < 2 && typeof force !== 'boolean') {
+        options = force;
+        force = false;
+      }
+
+      this.setOptions(options);
       _off(insProps[this._id], force);
       return this;
     }
