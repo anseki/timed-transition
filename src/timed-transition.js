@@ -219,10 +219,11 @@ function abort(props) {
 
 /**
  * @param {props} props - `props` of instance.
- * @param {boolean} [force] - Skip transition.
+ * @param {boolean} force - Skip transition.
+ * @param {Array} args - Arguments that are passed to procToOn.
  * @returns {void}
  */
-function on(props, force) {
+function on(props, force, args) {
   // [DEBUG]
   traceLog.push('<on>', `_id:${props._id}`, `state:${STATE_TEXT[props.state]}`);
   traceLog.push(`force:${!!force}`);
@@ -241,7 +242,10 @@ function on(props, force) {
       - Playing to `on` and `force`
   */
 
-  if (props.options.procToOn) { props.options.procToOn.call(props.ins, !!force); }
+  if (props.options.procToOn) {
+    args.unshift(!!force);
+    props.options.procToOn.apply(props.ins, args);
+  }
 
   if (force || !props.isOn && props.state === STATE_DELAYING ||
       -props.delay > props.duration) { // The delay must have not changed before turning over.
@@ -280,10 +284,11 @@ function on(props, force) {
 
 /**
  * @param {props} props - `props` of instance.
- * @param {boolean} [force] - Skip transition.
+ * @param {boolean} force - Skip transition.
+ * @param {Array} args - Arguments that are passed to procToOff.
  * @returns {void}
  */
-function off(props, force) {
+function off(props, force, args) {
   // [DEBUG]
   traceLog.push('<off>', `_id:${props._id}`, `state:${STATE_TEXT[props.state]}`);
   traceLog.push(`force:${!!force}`);
@@ -302,7 +307,10 @@ function off(props, force) {
       - Playing to `off` and `force`
   */
 
-  if (props.options.procToOff) { props.options.procToOff.call(props.ins, !!force); }
+  if (props.options.procToOff) {
+    args.unshift(!!force);
+    props.options.procToOff.apply(props.ins, args);
+  }
 
   if (force || props.isOn && props.state === STATE_DELAYING ||
       -props.delay > props.duration) { // The delay must have not changed before turning over.
@@ -464,6 +472,7 @@ class TimedTransition {
    * Set `on`.
    * @param {boolean} [force] - Set `on` it immediately without transition.
    * @param {Object} [options] - New options.
+   * @param {...{}} [args] - Arguments that are passed to procToOn.
    * @returns {TimedTransition} Current instance itself.
    */
   on(force, options) {
@@ -473,7 +482,7 @@ class TimedTransition {
     }
 
     this.setOptions(options);
-    on(insProps[this._id], force);
+    on(insProps[this._id], force, Array.prototype.slice.call(arguments, 2));
     return this;
   }
 
@@ -481,6 +490,7 @@ class TimedTransition {
    * Set 'off'.
    * @param {boolean} [force] - Set `off` it immediately without transition.
    * @param {Object} [options] - New options.
+   * @param {...{}} [args] - Arguments that are passed to procToOff.
    * @returns {TimedTransition} Current instance itself.
    */
   off(force, options) {
@@ -490,7 +500,7 @@ class TimedTransition {
     }
 
     this.setOptions(options);
-    off(insProps[this._id], force);
+    off(insProps[this._id], force, Array.prototype.slice.call(arguments, 2));
     return this;
   }
 
