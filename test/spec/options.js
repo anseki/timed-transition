@@ -761,18 +761,16 @@ describe('options', function() {
     });
 
     it('should get window via current window', function() {
-      // Fragment
-      var frgSvg = (new DOMParser()).parseFromString('<svg xmlns="http://www.w3.org/2000/svg" version="1.1"></svg>', 'image/svg+xml').documentElement,
-        element = frgSvg.cloneNode(true),
+      // element: SVG Element
+      var element = (new DOMParser()).parseFromString('<svg xmlns="http://www.w3.org/2000/svg" version="1.1"></svg>', 'image/svg+xml').documentElement,
         transition = new TimedTransition(element);
-      expect(element.ownerDocument.defaultView).toBe(null); // element: SVG Element
+      expect(element.ownerDocument.defaultView).toBe(null);
       expect(insProps[transition._id].window).toBe(window); // current window
     });
 
     it('should get window via options.window', function() {
-      // Fragment
-      var frgSvg = (new DOMParser()).parseFromString('<svg xmlns="http://www.w3.org/2000/svg" version="1.1"></svg>', 'image/svg+xml').documentElement,
-        element = frgSvg.cloneNode(true),
+      // element: SVG Element
+      var element = (new DOMParser()).parseFromString('<svg xmlns="http://www.w3.org/2000/svg" version="1.1"></svg>', 'image/svg+xml').documentElement,
         optWin = 'WINDOW',
         transition = new TimedTransition(element, {
           window: optWin,
@@ -781,7 +779,7 @@ describe('options', function() {
           duration: 'DUR',
           delay: 'DEL'
         });
-      expect(element.ownerDocument.defaultView).toBe(null); // element: SVG Element
+      expect(element.ownerDocument.defaultView).toBe(null);
       expect(insProps[transition._id].window).toBe(optWin); // options.window
     });
   });
