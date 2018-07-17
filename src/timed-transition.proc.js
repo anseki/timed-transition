@@ -26,18 +26,6 @@ const
   IS_EDGE = '-ms-scroll-limit' in document.documentElement.style &&
     '-ms-ime-align' in document.documentElement.style && !window.navigator.msPointerEnabled,
 
-  isObject = (() => {
-    const toString = {}.toString,
-      fnToString = {}.hasOwnProperty.toString,
-      objFnString = fnToString.call(Object);
-    return obj => {
-      let proto, constr;
-      return obj && toString.call(obj) === '[object Object]' &&
-        (!(proto = Object.getPrototypeOf(obj)) ||
-          (constr = proto.hasOwnProperty('constructor') && proto.constructor) &&
-          typeof constr === 'function' && fnToString.call(constr) === objFnString);
-    };
-  })(),
   isFinite = Number.isFinite || (value => typeof value === 'number' && window.isFinite(value)),
 
   /**
@@ -355,11 +343,7 @@ class TimedTransition {
       throw new Error('This `element` is not accepted.');
     }
     props.element = element;
-    if (!options) {
-      options = {};
-    } else if (!isObject(options)) {
-      throw new Error('Invalid options.');
-    }
+    if (!options) { options = {}; }
     props.window = element.ownerDocument.defaultView || options.window || window;
 
     // Default options
@@ -382,9 +366,7 @@ class TimedTransition {
    * @returns {TimedTransition} Current instance itself.
    */
   setOptions(options) {
-    if (isObject(options)) {
-      setOptions(insProps[this._id], options);
-    }
+    if (options) { setOptions(insProps[this._id], options); }
     return this;
   }
 
