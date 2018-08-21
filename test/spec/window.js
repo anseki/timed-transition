@@ -691,16 +691,20 @@ describe('child window', function() {
       });
 
       it('play', function(done) {
+        var logTime;
         transition.off(true);
-        setTimeout(function() {
-          traceLog.length = 0;
-          var logTime = TimedTransition.roundTime(Date.now());
-          utils.initLog();
+        utils.intervalExec([
+          // ====================================
+          100, function() {
+            traceLog.length = 0;
+            logTime = TimedTransition.roundTime(Date.now());
+            utils.initLog();
 
-          utils.addLog('ON', transition);
-          transition.on();
-
-          setTimeout(function() {
+            utils.addLog('ON', transition);
+            transition.on();
+          },
+          // ====================================
+          DURATION + 100, function() {
             expect(traceLog).toEqual([
               '<on>', '_id:' + transition._id, 'state:STATE_STOPPED', 'force:false',
               'isOn:false', 'runTime:0', 'startTime:0', 'currentPosition:0',
@@ -757,24 +761,27 @@ describe('child window', function() {
                 [0, STATE_PLAYING, false, 'timedTransitionStart', 0],
                 [DURATION, STATE_STOPPED, null, 'timedTransitionEnd', DURATION_S]
               ]));
-
-            done();
-          }, DURATION + 100);
-
-        }, 100);
+          },
+          // ====================================
+          0, done
+        ]);
       }, DURATION + 1000);
 
       it('revers', function(done) {
+        var logTime;
         transition.on(true);
-        setTimeout(function() {
-          traceLog.length = 0;
-          var logTime = TimedTransition.roundTime(Date.now());
-          utils.initLog();
+        utils.intervalExec([
+          // ====================================
+          100, function() {
+            traceLog.length = 0;
+            logTime = TimedTransition.roundTime(Date.now());
+            utils.initLog();
 
-          utils.addLog('OFF', transition);
-          transition.off();
-
-          setTimeout(function() {
+            utils.addLog('OFF', transition);
+            transition.off();
+          },
+          // ====================================
+          DURATION + 100, function() {
             expect(traceLog).toEqual([
               '<off>', '_id:' + transition._id, 'state:STATE_STOPPED', 'force:false',
               'isOn:true', 'runTime:0', 'startTime:0', 'currentPosition:' + DURATION,
@@ -836,281 +843,289 @@ describe('child window', function() {
                 [0, STATE_PLAYING, true, 'timedTransitionStart', 0],
                 [DURATION, STATE_STOPPED, null, 'timedTransitionEnd', DURATION_S]
               ]));
-
-            done();
-          }, DURATION + 100);
-
-        }, 100);
+          },
+          // ====================================
+          0, done
+        ]);
       }, DURATION + 1000);
 
       it('play -> turn', function(done) {
+        var logTime;
         transition.off(true);
-        setTimeout(function() {
-          traceLog.length = 0;
-          var logTime = TimedTransition.roundTime(Date.now());
-          utils.initLog();
+        utils.intervalExec([
+          // ====================================
+          100, function() {
+            traceLog.length = 0;
+            logTime = TimedTransition.roundTime(Date.now());
+            utils.initLog();
 
-          utils.addLog('ON', transition);
-          transition.on();
-
-          setTimeout(function() {
+            utils.addLog('ON', transition);
+            transition.on();
+          },
+          // ====================================
+          LESS_PLAY, function() {
             utils.addLog('OFF', transition);
             transition.off();
+          },
+          // ====================================
+          LESS_PLAY + 100, function() {
+            expect(traceLog).toEqual([
+              '<on>', '_id:' + transition._id, 'state:STATE_STOPPED', 'force:false',
+              'isOn:false', 'runTime:0', 'startTime:0', 'currentPosition:0',
 
-            setTimeout(function() {
-              expect(traceLog).toEqual([
-                '<on>', '_id:' + transition._id, 'state:STATE_STOPPED', 'force:false',
-                'isOn:false', 'runTime:0', 'startTime:0', 'currentPosition:0',
+              '<fixCurrentPosition>', '_id:' + transition._id, 'state:STATE_STOPPED',
+              'currentPosition:0',
+              'CANCEL', '</fixCurrentPosition>',
 
-                '<fixCurrentPosition>', '_id:' + transition._id, 'state:STATE_STOPPED',
-                'currentPosition:0',
-                'CANCEL', '</fixCurrentPosition>',
+              '<abort>', '_id:' + transition._id, 'isOn:false',
+              'CANCEL', '</abort>',
 
-                '<abort>', '_id:' + transition._id, 'isOn:false',
-                'CANCEL', '</abort>',
+              'state:STATE_DELAYING',
 
-                'state:STATE_DELAYING',
+              '<fireEvent>', '_id:' + transition._id, 'state:STATE_DELAYING',
+              'isOn:true', 'runTime:' + logTime, 'startTime:0', 'currentPosition:0',
+              'type:timedTransitionRun',
+              '</fireEvent>',
 
-                '<fireEvent>', '_id:' + transition._id, 'state:STATE_DELAYING',
-                'isOn:true', 'runTime:' + logTime, 'startTime:0', 'currentPosition:0',
-                'type:timedTransitionRun',
-                '</fireEvent>',
+              '<finishDelaying>', '_id:' + transition._id, 'state:STATE_DELAYING',
+              'isOn:true', 'runTime:' + logTime, 'startTime:0', 'currentPosition:0',
+              'state:STATE_PLAYING',
 
-                '<finishDelaying>', '_id:' + transition._id, 'state:STATE_DELAYING',
-                'isOn:true', 'runTime:' + logTime, 'startTime:0', 'currentPosition:0',
-                'state:STATE_PLAYING',
+              '<fireEvent>', '_id:' + transition._id, 'state:STATE_PLAYING',
+              'isOn:true', 'runTime:' + logTime, 'startTime:' + logTime, 'currentPosition:0',
+              'type:timedTransitionStart',
+              '</fireEvent>',
 
-                '<fireEvent>', '_id:' + transition._id, 'state:STATE_PLAYING',
-                'isOn:true', 'runTime:' + logTime, 'startTime:' + logTime, 'currentPosition:0',
-                'type:timedTransitionStart',
-                '</fireEvent>',
+              'durationLeft:' + DURATION,
+              '</finishDelaying>',
 
-                'durationLeft:' + DURATION,
-                '</finishDelaying>',
+              '</on>',
 
-                '</on>',
+              '<off>', '_id:' + transition._id, 'state:STATE_PLAYING', 'force:false',
+              'isOn:true', 'runTime:' + logTime, 'startTime:' + logTime, 'currentPosition:0',
 
-                '<off>', '_id:' + transition._id, 'state:STATE_PLAYING', 'force:false',
-                'isOn:true', 'runTime:' + logTime, 'startTime:' + logTime, 'currentPosition:0',
+              '<fixCurrentPosition>', '_id:' + transition._id, 'state:STATE_PLAYING',
+              'currentPosition:0', 'currentPosition:' + LESS_PLAY,
+              '</fixCurrentPosition>',
 
-                '<fixCurrentPosition>', '_id:' + transition._id, 'state:STATE_PLAYING',
-                'currentPosition:0', 'currentPosition:' + LESS_PLAY,
-                '</fixCurrentPosition>',
+              '<abort>', '_id:' + transition._id, 'isOn:true',
+              'state:STATE_STOPPED',
 
-                '<abort>', '_id:' + transition._id, 'isOn:true',
-                'state:STATE_STOPPED',
+              '<fireEvent>', '_id:' + transition._id, 'state:STATE_STOPPED',
+              'isOn:true', 'runTime:' + logTime, 'startTime:' + logTime,
+              'currentPosition:' + LESS_PLAY,
+              'type:timedTransitionCancel',
+              '</fireEvent>',
 
-                '<fireEvent>', '_id:' + transition._id, 'state:STATE_STOPPED',
-                'isOn:true', 'runTime:' + logTime, 'startTime:' + logTime,
-                'currentPosition:' + LESS_PLAY,
-                'type:timedTransitionCancel',
-                '</fireEvent>',
+              '</abort>',
 
-                '</abort>',
+              'state:STATE_DELAYING',
 
-                'state:STATE_DELAYING',
+              '<fireEvent>', '_id:' + transition._id, 'state:STATE_DELAYING',
+              'isOn:false', 'runTime:' + (logTime + LESS_PLAY), 'startTime:0',
+              'currentPosition:' + LESS_PLAY,
+              'type:timedTransitionRun',
+              '</fireEvent>',
 
-                '<fireEvent>', '_id:' + transition._id, 'state:STATE_DELAYING',
-                'isOn:false', 'runTime:' + (logTime + LESS_PLAY), 'startTime:0',
-                'currentPosition:' + LESS_PLAY,
-                'type:timedTransitionRun',
-                '</fireEvent>',
+              '<finishDelaying>', '_id:' + transition._id, 'state:STATE_DELAYING',
+              'isOn:false', 'runTime:' + (logTime + LESS_PLAY), 'startTime:0',
+              'currentPosition:' + LESS_PLAY,
+              'state:STATE_PLAYING',
 
-                '<finishDelaying>', '_id:' + transition._id, 'state:STATE_DELAYING',
-                'isOn:false', 'runTime:' + (logTime + LESS_PLAY), 'startTime:0',
-                'currentPosition:' + LESS_PLAY,
-                'state:STATE_PLAYING',
+              '<fireEvent>', '_id:' + transition._id, 'state:STATE_PLAYING',
+              'isOn:false', 'runTime:' + (logTime + LESS_PLAY), 'startTime:' + (logTime + LESS_PLAY),
+              'currentPosition:' + LESS_PLAY,
+              'type:timedTransitionStart',
+              '</fireEvent>',
 
-                '<fireEvent>', '_id:' + transition._id, 'state:STATE_PLAYING',
-                'isOn:false', 'runTime:' + (logTime + LESS_PLAY), 'startTime:' + (logTime + LESS_PLAY),
-                'currentPosition:' + LESS_PLAY,
-                'type:timedTransitionStart',
-                '</fireEvent>',
+              'durationLeft:' + LESS_PLAY,
+              '</finishDelaying>',
 
-                'durationLeft:' + LESS_PLAY,
-                '</finishDelaying>',
+              '</off>',
 
-                '</off>',
+              '<finishPlaying>', '_id:' + transition._id, 'state:STATE_PLAYING',
+              'isOn:false', 'runTime:' + (logTime + LESS_PLAY), 'startTime:' + (logTime + LESS_PLAY),
+              'currentPosition:' + LESS_PLAY,
+              'state:STATE_STOPPED',
 
-                '<finishPlaying>', '_id:' + transition._id, 'state:STATE_PLAYING',
-                'isOn:false', 'runTime:' + (logTime + LESS_PLAY), 'startTime:' + (logTime + LESS_PLAY),
-                'currentPosition:' + LESS_PLAY,
-                'state:STATE_STOPPED',
+              '<fireEvent>', '_id:' + transition._id, 'state:STATE_STOPPED',
+              'isOn:false', 'runTime:' + (logTime + LESS_PLAY), 'startTime:' + (logTime + LESS_PLAY),
+              'currentPosition:' + LESS_PLAY,
+              'type:timedTransitionEnd',
+              '</fireEvent>',
 
-                '<fireEvent>', '_id:' + transition._id, 'state:STATE_STOPPED',
-                'isOn:false', 'runTime:' + (logTime + LESS_PLAY), 'startTime:' + (logTime + LESS_PLAY),
-                'currentPosition:' + LESS_PLAY,
-                'type:timedTransitionEnd',
-                '</fireEvent>',
+              '<finishAll/>', '_id:' + transition._id, 'isOn:false',
+              'state:STATE_STOPPED',
 
-                '<finishAll/>', '_id:' + transition._id, 'isOn:false',
-                'state:STATE_STOPPED',
+              '</finishPlaying>'
+            ]);
 
-                '</finishPlaying>'
-              ]);
-
-              expect(utils.eventLog).toBeEventLog(
-                utils.makeExpectedLog('margin-left', '', true, false, [
-                  // [time, state, isReversing, evtType, evtElapsedTime],
-                  // [time, state, isReversing, null, null, message],
-                  [0, STATE_STOPPED, null, null, null, 'ON'],
-                  [0, STATE_DELAYING, null, 'timedTransitionRun', 0],
-                  [0, STATE_PLAYING, false, 'timedTransitionStart', 0],
-                  [LESS_PLAY, STATE_PLAYING, false, null, null, 'OFF'],
-                  [LESS_PLAY, STATE_STOPPED, null, 'timedTransitionCancel', LESS_PLAY_S],
-                  [LESS_PLAY, STATE_DELAYING, null, 'timedTransitionRun', 0],
-                  [LESS_PLAY, STATE_PLAYING, true, 'timedTransitionStart', 0],
-                  [LESS_PLAY + LESS_PLAY, STATE_STOPPED, null, 'timedTransitionEnd', LESS_PLAY_S]
-                ]));
-
-              done();
-            }, LESS_PLAY + 100);
-          }, LESS_PLAY);
-
-        }, 100);
+            expect(utils.eventLog).toBeEventLog(
+              utils.makeExpectedLog('margin-left', '', true, false, [
+                // [time, state, isReversing, evtType, evtElapsedTime],
+                // [time, state, isReversing, null, null, message],
+                [0, STATE_STOPPED, null, null, null, 'ON'],
+                [0, STATE_DELAYING, null, 'timedTransitionRun', 0],
+                [0, STATE_PLAYING, false, 'timedTransitionStart', 0],
+                [LESS_PLAY, STATE_PLAYING, false, null, null, 'OFF'],
+                [LESS_PLAY, STATE_STOPPED, null, 'timedTransitionCancel', LESS_PLAY_S],
+                [LESS_PLAY, STATE_DELAYING, null, 'timedTransitionRun', 0],
+                [LESS_PLAY, STATE_PLAYING, true, 'timedTransitionStart', 0],
+                [LESS_PLAY + LESS_PLAY, STATE_STOPPED, null, 'timedTransitionEnd', LESS_PLAY_S]
+              ]));
+          },
+          // ====================================
+          0, done
+        ]);
       }, LESS_PLAY + LESS_PLAY + 1000);
 
       it('revers -> turn', function(done) {
+        var logTime;
         transition.on(true);
-        setTimeout(function() {
-          traceLog.length = 0;
-          var logTime = TimedTransition.roundTime(Date.now());
-          utils.initLog();
+        utils.intervalExec([
+          // ====================================
+          100, function() {
+            traceLog.length = 0;
+            logTime = TimedTransition.roundTime(Date.now());
+            utils.initLog();
 
-          utils.addLog('OFF', transition);
-          transition.off();
-
-          setTimeout(function() {
+            utils.addLog('OFF', transition);
+            transition.off();
+          },
+          // ====================================
+          LESS_PLAY, function() {
             utils.addLog('ON', transition);
             transition.on();
+          },
+          // ====================================
+          LESS_PLAY + 100, function() {
+            expect(traceLog).toEqual([
+              '<off>', '_id:' + transition._id, 'state:STATE_STOPPED', 'force:false',
+              'isOn:true', 'runTime:0', 'startTime:0', 'currentPosition:' + DURATION,
 
-            setTimeout(function() {
-              expect(traceLog).toEqual([
-                '<off>', '_id:' + transition._id, 'state:STATE_STOPPED', 'force:false',
-                'isOn:true', 'runTime:0', 'startTime:0', 'currentPosition:' + DURATION,
+              '<fixCurrentPosition>', '_id:' + transition._id, 'state:STATE_STOPPED',
+              'currentPosition:' + DURATION,
+              'CANCEL', '</fixCurrentPosition>',
 
-                '<fixCurrentPosition>', '_id:' + transition._id, 'state:STATE_STOPPED',
-                'currentPosition:' + DURATION,
-                'CANCEL', '</fixCurrentPosition>',
+              '<abort>', '_id:' + transition._id, 'isOn:true',
+              'CANCEL', '</abort>',
 
-                '<abort>', '_id:' + transition._id, 'isOn:true',
-                'CANCEL', '</abort>',
+              'state:STATE_DELAYING',
 
-                'state:STATE_DELAYING',
+              '<fireEvent>', '_id:' + transition._id, 'state:STATE_DELAYING',
+              'isOn:false', 'runTime:' + logTime, 'startTime:0',
+              'currentPosition:' + DURATION,
+              'type:timedTransitionRun',
+              '</fireEvent>',
 
-                '<fireEvent>', '_id:' + transition._id, 'state:STATE_DELAYING',
-                'isOn:false', 'runTime:' + logTime, 'startTime:0',
-                'currentPosition:' + DURATION,
-                'type:timedTransitionRun',
-                '</fireEvent>',
+              '<finishDelaying>', '_id:' + transition._id, 'state:STATE_DELAYING',
+              'isOn:false', 'runTime:' + logTime, 'startTime:0',
+              'currentPosition:' + DURATION,
+              'state:STATE_PLAYING',
 
-                '<finishDelaying>', '_id:' + transition._id, 'state:STATE_DELAYING',
-                'isOn:false', 'runTime:' + logTime, 'startTime:0',
-                'currentPosition:' + DURATION,
-                'state:STATE_PLAYING',
+              '<fireEvent>', '_id:' + transition._id, 'state:STATE_PLAYING',
+              'isOn:false', 'runTime:' + logTime, 'startTime:' + logTime,
+              'currentPosition:' + DURATION,
+              'type:timedTransitionStart',
+              '</fireEvent>',
 
-                '<fireEvent>', '_id:' + transition._id, 'state:STATE_PLAYING',
-                'isOn:false', 'runTime:' + logTime, 'startTime:' + logTime,
-                'currentPosition:' + DURATION,
-                'type:timedTransitionStart',
-                '</fireEvent>',
+              'durationLeft:' + DURATION,
+              '</finishDelaying>',
 
-                'durationLeft:' + DURATION,
-                '</finishDelaying>',
+              '</off>',
 
-                '</off>',
+              '<on>', '_id:' + transition._id, 'state:STATE_PLAYING', 'force:false',
+              'isOn:false', 'runTime:' + logTime, 'startTime:' + logTime,
+              'currentPosition:' + DURATION,
 
-                '<on>', '_id:' + transition._id, 'state:STATE_PLAYING', 'force:false',
-                'isOn:false', 'runTime:' + logTime, 'startTime:' + logTime,
-                'currentPosition:' + DURATION,
+              '<fixCurrentPosition>', '_id:' + transition._id, 'state:STATE_PLAYING',
+              'currentPosition:' + DURATION, 'currentPosition:' + (DURATION - LESS_PLAY),
+              '</fixCurrentPosition>',
 
-                '<fixCurrentPosition>', '_id:' + transition._id, 'state:STATE_PLAYING',
-                'currentPosition:' + DURATION, 'currentPosition:' + (DURATION - LESS_PLAY),
-                '</fixCurrentPosition>',
+              '<abort>', '_id:' + transition._id, 'isOn:false',
+              'state:STATE_STOPPED',
 
-                '<abort>', '_id:' + transition._id, 'isOn:false',
-                'state:STATE_STOPPED',
+              '<fireEvent>', '_id:' + transition._id, 'state:STATE_STOPPED',
+              'isOn:false', 'runTime:' + logTime, 'startTime:' + logTime,
+              'currentPosition:' + (DURATION - LESS_PLAY),
+              'type:timedTransitionCancel',
+              '</fireEvent>',
 
-                '<fireEvent>', '_id:' + transition._id, 'state:STATE_STOPPED',
-                'isOn:false', 'runTime:' + logTime, 'startTime:' + logTime,
-                'currentPosition:' + (DURATION - LESS_PLAY),
-                'type:timedTransitionCancel',
-                '</fireEvent>',
+              '</abort>',
 
-                '</abort>',
+              'state:STATE_DELAYING',
 
-                'state:STATE_DELAYING',
+              '<fireEvent>', '_id:' + transition._id, 'state:STATE_DELAYING',
+              'isOn:true', 'runTime:' + (logTime + LESS_PLAY), 'startTime:0',
+              'currentPosition:' + (DURATION - LESS_PLAY),
+              'type:timedTransitionRun',
+              '</fireEvent>',
 
-                '<fireEvent>', '_id:' + transition._id, 'state:STATE_DELAYING',
-                'isOn:true', 'runTime:' + (logTime + LESS_PLAY), 'startTime:0',
-                'currentPosition:' + (DURATION - LESS_PLAY),
-                'type:timedTransitionRun',
-                '</fireEvent>',
+              '<finishDelaying>', '_id:' + transition._id, 'state:STATE_DELAYING',
+              'isOn:true', 'runTime:' + (logTime + LESS_PLAY), 'startTime:0',
+              'currentPosition:' + (DURATION - LESS_PLAY),
+              'state:STATE_PLAYING',
 
-                '<finishDelaying>', '_id:' + transition._id, 'state:STATE_DELAYING',
-                'isOn:true', 'runTime:' + (logTime + LESS_PLAY), 'startTime:0',
-                'currentPosition:' + (DURATION - LESS_PLAY),
-                'state:STATE_PLAYING',
+              '<fireEvent>', '_id:' + transition._id, 'state:STATE_PLAYING',
+              'isOn:true', 'runTime:' + (logTime + LESS_PLAY), 'startTime:' + (logTime + LESS_PLAY),
+              'currentPosition:' + (DURATION - LESS_PLAY),
+              'type:timedTransitionStart',
+              '</fireEvent>',
 
-                '<fireEvent>', '_id:' + transition._id, 'state:STATE_PLAYING',
-                'isOn:true', 'runTime:' + (logTime + LESS_PLAY), 'startTime:' + (logTime + LESS_PLAY),
-                'currentPosition:' + (DURATION - LESS_PLAY),
-                'type:timedTransitionStart',
-                '</fireEvent>',
+              'durationLeft:' + (DURATION - (DURATION - LESS_PLAY)),
+              '</finishDelaying>',
 
-                'durationLeft:' + (DURATION - (DURATION - LESS_PLAY)),
-                '</finishDelaying>',
+              '</on>',
 
-                '</on>',
+              '<finishPlaying>', '_id:' + transition._id, 'state:STATE_PLAYING',
+              'isOn:true', 'runTime:' + (logTime + LESS_PLAY), 'startTime:' + (logTime + LESS_PLAY),
+              'currentPosition:' + (DURATION - LESS_PLAY),
+              'state:STATE_STOPPED',
 
-                '<finishPlaying>', '_id:' + transition._id, 'state:STATE_PLAYING',
-                'isOn:true', 'runTime:' + (logTime + LESS_PLAY), 'startTime:' + (logTime + LESS_PLAY),
-                'currentPosition:' + (DURATION - LESS_PLAY),
-                'state:STATE_STOPPED',
+              '<fireEvent>', '_id:' + transition._id, 'state:STATE_STOPPED',
+              'isOn:true', 'runTime:' + (logTime + LESS_PLAY), 'startTime:' + (logTime + LESS_PLAY),
+              'currentPosition:' + (DURATION - LESS_PLAY),
+              'type:timedTransitionEnd',
+              '</fireEvent>',
 
-                '<fireEvent>', '_id:' + transition._id, 'state:STATE_STOPPED',
-                'isOn:true', 'runTime:' + (logTime + LESS_PLAY), 'startTime:' + (logTime + LESS_PLAY),
-                'currentPosition:' + (DURATION - LESS_PLAY),
-                'type:timedTransitionEnd',
-                '</fireEvent>',
+              '<finishAll/>', '_id:' + transition._id, 'isOn:true',
+              'state:STATE_STOPPED',
 
-                '<finishAll/>', '_id:' + transition._id, 'isOn:true',
-                'state:STATE_STOPPED',
+              '</finishPlaying>'
+            ]);
 
-                '</finishPlaying>'
-              ]);
-
-              expect(utils.eventLog).toBeEventLog(
-                utils.makeExpectedLog('margin-left', '', true, false, [
-                  // [time, state, isReversing, evtType, evtElapsedTime],
-                  // [time, state, isReversing, null, null, message],
-                  [0, STATE_STOPPED, null, null, null, 'OFF'],
-                  [0, STATE_DELAYING, null, 'timedTransitionRun', 0],
-                  [0, STATE_PLAYING, true, 'timedTransitionStart', 0],
-                  [LESS_PLAY, STATE_PLAYING, true, null, null, 'ON'],
-                  [LESS_PLAY, STATE_STOPPED, null, 'timedTransitionCancel', LESS_PLAY_S],
-                  [LESS_PLAY, STATE_DELAYING, null, 'timedTransitionRun', 0],
-                  [LESS_PLAY, STATE_PLAYING, false, 'timedTransitionStart', 0],
-                  [LESS_PLAY + LESS_PLAY, STATE_STOPPED, null, 'timedTransitionEnd', LESS_PLAY_S]
-                ]));
-
-              done();
-            }, LESS_PLAY + 100);
-          }, LESS_PLAY);
-
-        }, 100);
+            expect(utils.eventLog).toBeEventLog(
+              utils.makeExpectedLog('margin-left', '', true, false, [
+                // [time, state, isReversing, evtType, evtElapsedTime],
+                // [time, state, isReversing, null, null, message],
+                [0, STATE_STOPPED, null, null, null, 'OFF'],
+                [0, STATE_DELAYING, null, 'timedTransitionRun', 0],
+                [0, STATE_PLAYING, true, 'timedTransitionStart', 0],
+                [LESS_PLAY, STATE_PLAYING, true, null, null, 'ON'],
+                [LESS_PLAY, STATE_STOPPED, null, 'timedTransitionCancel', LESS_PLAY_S],
+                [LESS_PLAY, STATE_DELAYING, null, 'timedTransitionRun', 0],
+                [LESS_PLAY, STATE_PLAYING, false, 'timedTransitionStart', 0],
+                [LESS_PLAY + LESS_PLAY, STATE_STOPPED, null, 'timedTransitionEnd', LESS_PLAY_S]
+              ]));
+          },
+          // ====================================
+          0, done
+        ]);
       }, LESS_PLAY + LESS_PLAY + 1000);
 
       it('play(force)', function(done) {
         transition.off(true);
-        setTimeout(function() {
-          traceLog.length = 0;
-          utils.initLog();
+        utils.intervalExec([
+          // ====================================
+          100, function() {
+            traceLog.length = 0;
+            utils.initLog();
 
-          utils.addLog('ON(force)', transition);
-          transition.on(true);
-
-          setTimeout(function() {
+            utils.addLog('ON(force)', transition);
+            transition.on(true);
+          },
+          // ====================================
+          WAIT + 100, function() {
             expect(traceLog).toEqual([
               '<on>', '_id:' + transition._id, 'state:STATE_STOPPED', 'force:true',
               'isOn:false', 'runTime:0', 'startTime:0', 'currentPosition:0',
@@ -1132,201 +1147,209 @@ describe('child window', function() {
                 // [time, state, isReversing, null, null, message],
                 [0, STATE_STOPPED, null, null, null, 'ON(force)']
               ]));
-
-            done();
-          }, WAIT + 100);
-
-        }, 100);
+          },
+          // ====================================
+          0, done
+        ]);
       }, WAIT + 1000);
 
       it('play -> play(force)', function(done) {
+        var logTime;
         transition.off(true);
-        setTimeout(function() {
-          traceLog.length = 0;
-          var logTime = TimedTransition.roundTime(Date.now());
-          utils.initLog();
+        utils.intervalExec([
+          // ====================================
+          100, function() {
+            traceLog.length = 0;
+            logTime = TimedTransition.roundTime(Date.now());
+            utils.initLog();
 
-          utils.addLog('ON', transition);
-          transition.on();
-
-          setTimeout(function() {
+            utils.addLog('ON', transition);
+            transition.on();
+          },
+          // ====================================
+          LESS_PLAY, function() {
             utils.addLog('ON(force)', transition);
             transition.on(true);
+          },
+          // ====================================
+          WAIT, function() {
+            expect(traceLog).toEqual([
+              '<on>', '_id:' + transition._id, 'state:STATE_STOPPED', 'force:false',
+              'isOn:false', 'runTime:0', 'startTime:0', 'currentPosition:0',
 
-            setTimeout(function() {
-              expect(traceLog).toEqual([
-                '<on>', '_id:' + transition._id, 'state:STATE_STOPPED', 'force:false',
-                'isOn:false', 'runTime:0', 'startTime:0', 'currentPosition:0',
+              '<fixCurrentPosition>', '_id:' + transition._id, 'state:STATE_STOPPED',
+              'currentPosition:0',
+              'CANCEL', '</fixCurrentPosition>',
 
-                '<fixCurrentPosition>', '_id:' + transition._id, 'state:STATE_STOPPED',
-                'currentPosition:0',
-                'CANCEL', '</fixCurrentPosition>',
+              '<abort>', '_id:' + transition._id, 'isOn:false',
+              'CANCEL', '</abort>',
 
-                '<abort>', '_id:' + transition._id, 'isOn:false',
-                'CANCEL', '</abort>',
+              'state:STATE_DELAYING',
 
-                'state:STATE_DELAYING',
+              '<fireEvent>', '_id:' + transition._id, 'state:STATE_DELAYING',
+              'isOn:true', 'runTime:' + logTime, 'startTime:0', 'currentPosition:0',
+              'type:timedTransitionRun',
+              '</fireEvent>',
 
-                '<fireEvent>', '_id:' + transition._id, 'state:STATE_DELAYING',
-                'isOn:true', 'runTime:' + logTime, 'startTime:0', 'currentPosition:0',
-                'type:timedTransitionRun',
-                '</fireEvent>',
+              '<finishDelaying>', '_id:' + transition._id, 'state:STATE_DELAYING',
+              'isOn:true', 'runTime:' + logTime, 'startTime:0', 'currentPosition:0',
+              'state:STATE_PLAYING',
 
-                '<finishDelaying>', '_id:' + transition._id, 'state:STATE_DELAYING',
-                'isOn:true', 'runTime:' + logTime, 'startTime:0', 'currentPosition:0',
-                'state:STATE_PLAYING',
+              '<fireEvent>', '_id:' + transition._id, 'state:STATE_PLAYING',
+              'isOn:true', 'runTime:' + logTime, 'startTime:' + logTime, 'currentPosition:0',
+              'type:timedTransitionStart',
+              '</fireEvent>',
 
-                '<fireEvent>', '_id:' + transition._id, 'state:STATE_PLAYING',
-                'isOn:true', 'runTime:' + logTime, 'startTime:' + logTime, 'currentPosition:0',
-                'type:timedTransitionStart',
-                '</fireEvent>',
+              'durationLeft:' + DURATION,
+              '</finishDelaying>',
 
-                'durationLeft:' + DURATION,
-                '</finishDelaying>',
+              '</on>',
 
-                '</on>',
+              '<on>', '_id:' + transition._id, 'state:STATE_PLAYING', 'force:true',
+              'isOn:true', 'runTime:' + logTime, 'startTime:' + logTime, 'currentPosition:0',
 
-                '<on>', '_id:' + transition._id, 'state:STATE_PLAYING', 'force:true',
-                'isOn:true', 'runTime:' + logTime, 'startTime:' + logTime, 'currentPosition:0',
+              'STOP(force)',
 
-                'STOP(force)',
+              '<abort>', '_id:' + transition._id, 'isOn:true',
+              'state:STATE_STOPPED',
 
-                '<abort>', '_id:' + transition._id, 'isOn:true',
-                'state:STATE_STOPPED',
+              '<fireEvent>', '_id:' + transition._id, 'state:STATE_STOPPED',
+              'isOn:true', 'runTime:' + logTime, 'startTime:' + logTime,
+              'currentPosition:0',
+              'type:timedTransitionCancel',
+              '</fireEvent>',
 
-                '<fireEvent>', '_id:' + transition._id, 'state:STATE_STOPPED',
-                'isOn:true', 'runTime:' + logTime, 'startTime:' + logTime,
-                'currentPosition:0',
-                'type:timedTransitionCancel',
-                '</fireEvent>',
+              '</abort>',
 
-                '</abort>',
+              '<finishAll/>', '_id:' + transition._id, 'isOn:true',
+              'state:STATE_STOPPED',
 
-                '<finishAll/>', '_id:' + transition._id, 'isOn:true',
-                'state:STATE_STOPPED',
+              '</on>'
+            ]);
 
-                '</on>'
-              ]);
-
-              expect(utils.eventLog).toBeEventLog(
-                utils.makeExpectedLog('margin-left', '', true, false, [
-                  // [time, state, isReversing, evtType, evtElapsedTime],
-                  // [time, state, isReversing, null, null, message],
-                  [0, STATE_STOPPED, null, null, null, 'ON'],
-                  [0, STATE_DELAYING, null, 'timedTransitionRun', 0],
-                  [0, STATE_PLAYING, false, 'timedTransitionStart', 0],
-                  [LESS_PLAY, STATE_PLAYING, false, null, null, 'ON(force)'],
-                  [LESS_PLAY, STATE_STOPPED, null, 'timedTransitionCancel', LESS_PLAY_S]
-                ]));
-
-              done();
-            }, WAIT);
-          }, LESS_PLAY);
-
-        }, 100);
+            expect(utils.eventLog).toBeEventLog(
+              utils.makeExpectedLog('margin-left', '', true, false, [
+                // [time, state, isReversing, evtType, evtElapsedTime],
+                // [time, state, isReversing, null, null, message],
+                [0, STATE_STOPPED, null, null, null, 'ON'],
+                [0, STATE_DELAYING, null, 'timedTransitionRun', 0],
+                [0, STATE_PLAYING, false, 'timedTransitionStart', 0],
+                [LESS_PLAY, STATE_PLAYING, false, null, null, 'ON(force)'],
+                [LESS_PLAY, STATE_STOPPED, null, 'timedTransitionCancel', LESS_PLAY_S]
+              ]));
+          },
+          // ====================================
+          0, done
+        ]);
       }, LESS_PLAY + WAIT + 1000);
 
       it('revers -> play(force)', function(done) {
+        var logTime;
         transition.on(true);
-        setTimeout(function() {
-          traceLog.length = 0;
-          var logTime = TimedTransition.roundTime(Date.now());
-          utils.initLog();
+        utils.intervalExec([
+          // ====================================
+          100, function() {
+            traceLog.length = 0;
+            logTime = TimedTransition.roundTime(Date.now());
+            utils.initLog();
 
-          utils.addLog('OFF', transition);
-          transition.off();
-
-          setTimeout(function() {
+            utils.addLog('OFF', transition);
+            transition.off();
+          },
+          // ====================================
+          LESS_PLAY, function() {
             utils.addLog('ON(force)', transition);
             transition.on(true);
+          },
+          // ====================================
+          WAIT, function() {
+            expect(traceLog).toEqual([
+              '<off>', '_id:' + transition._id, 'state:STATE_STOPPED', 'force:false',
+              'isOn:true', 'runTime:0', 'startTime:0', 'currentPosition:' + DURATION,
 
-            setTimeout(function() {
-              expect(traceLog).toEqual([
-                '<off>', '_id:' + transition._id, 'state:STATE_STOPPED', 'force:false',
-                'isOn:true', 'runTime:0', 'startTime:0', 'currentPosition:' + DURATION,
+              '<fixCurrentPosition>', '_id:' + transition._id, 'state:STATE_STOPPED',
+              'currentPosition:' + DURATION,
+              'CANCEL', '</fixCurrentPosition>',
 
-                '<fixCurrentPosition>', '_id:' + transition._id, 'state:STATE_STOPPED',
-                'currentPosition:' + DURATION,
-                'CANCEL', '</fixCurrentPosition>',
+              '<abort>', '_id:' + transition._id, 'isOn:true',
+              'CANCEL', '</abort>',
 
-                '<abort>', '_id:' + transition._id, 'isOn:true',
-                'CANCEL', '</abort>',
+              'state:STATE_DELAYING',
 
-                'state:STATE_DELAYING',
+              '<fireEvent>', '_id:' + transition._id, 'state:STATE_DELAYING',
+              'isOn:false', 'runTime:' + logTime, 'startTime:0',
+              'currentPosition:' + DURATION,
+              'type:timedTransitionRun',
+              '</fireEvent>',
 
-                '<fireEvent>', '_id:' + transition._id, 'state:STATE_DELAYING',
-                'isOn:false', 'runTime:' + logTime, 'startTime:0',
-                'currentPosition:' + DURATION,
-                'type:timedTransitionRun',
-                '</fireEvent>',
+              '<finishDelaying>', '_id:' + transition._id, 'state:STATE_DELAYING',
+              'isOn:false', 'runTime:' + logTime, 'startTime:0',
+              'currentPosition:' + DURATION,
+              'state:STATE_PLAYING',
 
-                '<finishDelaying>', '_id:' + transition._id, 'state:STATE_DELAYING',
-                'isOn:false', 'runTime:' + logTime, 'startTime:0',
-                'currentPosition:' + DURATION,
-                'state:STATE_PLAYING',
+              '<fireEvent>', '_id:' + transition._id, 'state:STATE_PLAYING',
+              'isOn:false', 'runTime:' + logTime, 'startTime:' + logTime,
+              'currentPosition:' + DURATION,
+              'type:timedTransitionStart',
+              '</fireEvent>',
 
-                '<fireEvent>', '_id:' + transition._id, 'state:STATE_PLAYING',
-                'isOn:false', 'runTime:' + logTime, 'startTime:' + logTime,
-                'currentPosition:' + DURATION,
-                'type:timedTransitionStart',
-                '</fireEvent>',
+              'durationLeft:' + DURATION,
+              '</finishDelaying>',
 
-                'durationLeft:' + DURATION,
-                '</finishDelaying>',
+              '</off>',
 
-                '</off>',
+              '<on>', '_id:' + transition._id, 'state:STATE_PLAYING', 'force:true',
+              'isOn:false', 'runTime:' + logTime, 'startTime:' + logTime,
+              'currentPosition:' + DURATION,
 
-                '<on>', '_id:' + transition._id, 'state:STATE_PLAYING', 'force:true',
-                'isOn:false', 'runTime:' + logTime, 'startTime:' + logTime,
-                'currentPosition:' + DURATION,
+              'STOP(force)',
 
-                'STOP(force)',
+              '<abort>', '_id:' + transition._id, 'isOn:false',
+              'state:STATE_STOPPED',
 
-                '<abort>', '_id:' + transition._id, 'isOn:false',
-                'state:STATE_STOPPED',
+              '<fireEvent>', '_id:' + transition._id, 'state:STATE_STOPPED',
+              'isOn:false', 'runTime:' + logTime, 'startTime:' + logTime,
+              'currentPosition:' + DURATION,
+              'type:timedTransitionCancel',
+              '</fireEvent>',
 
-                '<fireEvent>', '_id:' + transition._id, 'state:STATE_STOPPED',
-                'isOn:false', 'runTime:' + logTime, 'startTime:' + logTime,
-                'currentPosition:' + DURATION,
-                'type:timedTransitionCancel',
-                '</fireEvent>',
+              '</abort>',
 
-                '</abort>',
+              '<finishAll/>', '_id:' + transition._id, 'isOn:true',
+              'state:STATE_STOPPED',
 
-                '<finishAll/>', '_id:' + transition._id, 'isOn:true',
-                'state:STATE_STOPPED',
+              '</on>'
+            ]);
 
-                '</on>'
-              ]);
-
-              expect(utils.eventLog).toBeEventLog(
-                utils.makeExpectedLog('margin-left', '', true, false, [
-                  // [time, state, isReversing, evtType, evtElapsedTime],
-                  // [time, state, isReversing, null, null, message],
-                  [0, STATE_STOPPED, null, null, null, 'OFF'],
-                  [0, STATE_DELAYING, null, 'timedTransitionRun', 0],
-                  [0, STATE_PLAYING, true, 'timedTransitionStart', 0],
-                  [LESS_PLAY, STATE_PLAYING, true, null, null, 'ON(force)'],
-                  [LESS_PLAY, STATE_STOPPED, null, 'timedTransitionCancel', LESS_PLAY_S]
-                ]));
-
-              done();
-            }, WAIT);
-          }, LESS_PLAY);
-
-        }, 100);
+            expect(utils.eventLog).toBeEventLog(
+              utils.makeExpectedLog('margin-left', '', true, false, [
+                // [time, state, isReversing, evtType, evtElapsedTime],
+                // [time, state, isReversing, null, null, message],
+                [0, STATE_STOPPED, null, null, null, 'OFF'],
+                [0, STATE_DELAYING, null, 'timedTransitionRun', 0],
+                [0, STATE_PLAYING, true, 'timedTransitionStart', 0],
+                [LESS_PLAY, STATE_PLAYING, true, null, null, 'ON(force)'],
+                [LESS_PLAY, STATE_STOPPED, null, 'timedTransitionCancel', LESS_PLAY_S]
+              ]));
+          },
+          // ====================================
+          0, done
+        ]);
       }, LESS_PLAY + WAIT + 1000);
 
       it('revers(force)', function(done) {
         transition.on(true);
-        setTimeout(function() {
-          traceLog.length = 0;
-          utils.initLog();
+        utils.intervalExec([
+          // ====================================
+          100, function() {
+            traceLog.length = 0;
+            utils.initLog();
 
-          utils.addLog('OFF(force)', transition);
-          transition.off(true);
-
-          setTimeout(function() {
+            utils.addLog('OFF(force)', transition);
+            transition.off(true);
+          },
+          // ====================================
+          WAIT + 100, function() {
             expect(traceLog).toEqual([
               '<off>', '_id:' + transition._id, 'state:STATE_STOPPED', 'force:true',
               'isOn:true', 'runTime:0', 'startTime:0', 'currentPosition:' + DURATION,
@@ -1348,377 +1371,391 @@ describe('child window', function() {
                 // [time, state, isReversing, null, null, message],
                 [0, STATE_STOPPED, null, null, null, 'OFF(force)']
               ]));
-
-            done();
-          }, WAIT + 100);
-
-        }, 100);
+          },
+          // ====================================
+          0, done
+        ]);
       }, WAIT + 1000);
 
       it('revers -> revers(force)', function(done) {
+        var logTime;
         transition.on(true);
-        setTimeout(function() {
-          traceLog.length = 0;
-          var logTime = TimedTransition.roundTime(Date.now());
-          utils.initLog();
+        utils.intervalExec([
+          // ====================================
+          100, function() {
+            traceLog.length = 0;
+            logTime = TimedTransition.roundTime(Date.now());
+            utils.initLog();
 
-          utils.addLog('OFF', transition);
-          transition.off();
-
-          setTimeout(function() {
+            utils.addLog('OFF', transition);
+            transition.off();
+          },
+          // ====================================
+          LESS_PLAY, function() {
             utils.addLog('OFF(force)', transition);
             transition.off(true);
+          },
+          // ====================================
+          WAIT, function() {
+            expect(traceLog).toEqual([
+              '<off>', '_id:' + transition._id, 'state:STATE_STOPPED', 'force:false',
+              'isOn:true', 'runTime:0', 'startTime:0', 'currentPosition:' + DURATION,
 
-            setTimeout(function() {
-              expect(traceLog).toEqual([
-                '<off>', '_id:' + transition._id, 'state:STATE_STOPPED', 'force:false',
-                'isOn:true', 'runTime:0', 'startTime:0', 'currentPosition:' + DURATION,
+              '<fixCurrentPosition>', '_id:' + transition._id, 'state:STATE_STOPPED',
+              'currentPosition:' + DURATION,
+              'CANCEL', '</fixCurrentPosition>',
 
-                '<fixCurrentPosition>', '_id:' + transition._id, 'state:STATE_STOPPED',
-                'currentPosition:' + DURATION,
-                'CANCEL', '</fixCurrentPosition>',
+              '<abort>', '_id:' + transition._id, 'isOn:true',
+              'CANCEL', '</abort>',
 
-                '<abort>', '_id:' + transition._id, 'isOn:true',
-                'CANCEL', '</abort>',
+              'state:STATE_DELAYING',
 
-                'state:STATE_DELAYING',
+              '<fireEvent>', '_id:' + transition._id, 'state:STATE_DELAYING',
+              'isOn:false', 'runTime:' + logTime, 'startTime:0',
+              'currentPosition:' + DURATION,
+              'type:timedTransitionRun',
+              '</fireEvent>',
 
-                '<fireEvent>', '_id:' + transition._id, 'state:STATE_DELAYING',
-                'isOn:false', 'runTime:' + logTime, 'startTime:0',
-                'currentPosition:' + DURATION,
-                'type:timedTransitionRun',
-                '</fireEvent>',
+              '<finishDelaying>', '_id:' + transition._id, 'state:STATE_DELAYING',
+              'isOn:false', 'runTime:' + logTime, 'startTime:0',
+              'currentPosition:' + DURATION,
+              'state:STATE_PLAYING',
 
-                '<finishDelaying>', '_id:' + transition._id, 'state:STATE_DELAYING',
-                'isOn:false', 'runTime:' + logTime, 'startTime:0',
-                'currentPosition:' + DURATION,
-                'state:STATE_PLAYING',
+              '<fireEvent>', '_id:' + transition._id, 'state:STATE_PLAYING',
+              'isOn:false', 'runTime:' + logTime, 'startTime:' + logTime,
+              'currentPosition:' + DURATION,
+              'type:timedTransitionStart',
+              '</fireEvent>',
 
-                '<fireEvent>', '_id:' + transition._id, 'state:STATE_PLAYING',
-                'isOn:false', 'runTime:' + logTime, 'startTime:' + logTime,
-                'currentPosition:' + DURATION,
-                'type:timedTransitionStart',
-                '</fireEvent>',
+              'durationLeft:' + DURATION,
+              '</finishDelaying>',
 
-                'durationLeft:' + DURATION,
-                '</finishDelaying>',
+              '</off>',
 
-                '</off>',
+              '<off>', '_id:' + transition._id, 'state:STATE_PLAYING', 'force:true',
+              'isOn:false', 'runTime:' + logTime, 'startTime:' + logTime,
+              'currentPosition:' + DURATION,
 
-                '<off>', '_id:' + transition._id, 'state:STATE_PLAYING', 'force:true',
-                'isOn:false', 'runTime:' + logTime, 'startTime:' + logTime,
-                'currentPosition:' + DURATION,
+              'STOP(force)',
 
-                'STOP(force)',
+              '<abort>', '_id:' + transition._id, 'isOn:false',
+              'state:STATE_STOPPED',
 
-                '<abort>', '_id:' + transition._id, 'isOn:false',
-                'state:STATE_STOPPED',
+              '<fireEvent>', '_id:' + transition._id, 'state:STATE_STOPPED',
+              'isOn:false', 'runTime:' + logTime, 'startTime:' + logTime,
+              'currentPosition:' + DURATION,
+              'type:timedTransitionCancel',
+              '</fireEvent>',
 
-                '<fireEvent>', '_id:' + transition._id, 'state:STATE_STOPPED',
-                'isOn:false', 'runTime:' + logTime, 'startTime:' + logTime,
-                'currentPosition:' + DURATION,
-                'type:timedTransitionCancel',
-                '</fireEvent>',
+              '</abort>',
 
-                '</abort>',
+              '<finishAll/>', '_id:' + transition._id, 'isOn:false',
+              'state:STATE_STOPPED',
 
-                '<finishAll/>', '_id:' + transition._id, 'isOn:false',
-                'state:STATE_STOPPED',
+              '</off>'
+            ]);
 
-                '</off>'
-              ]);
-
-              expect(utils.eventLog).toBeEventLog(
-                utils.makeExpectedLog('margin-left', '', true, false, [
-                  // [time, state, isReversing, evtType, evtElapsedTime],
-                  // [time, state, isReversing, null, null, message],
-                  [0, STATE_STOPPED, null, null, null, 'OFF'],
-                  [0, STATE_DELAYING, null, 'timedTransitionRun', 0],
-                  [0, STATE_PLAYING, true, 'timedTransitionStart', 0],
-                  [LESS_PLAY, STATE_PLAYING, true, null, null, 'OFF(force)'],
-                  [LESS_PLAY, STATE_STOPPED, null, 'timedTransitionCancel', LESS_PLAY_S]
-                ]));
-
-              done();
-            }, WAIT);
-          }, LESS_PLAY);
-
-        }, 100);
+            expect(utils.eventLog).toBeEventLog(
+              utils.makeExpectedLog('margin-left', '', true, false, [
+                // [time, state, isReversing, evtType, evtElapsedTime],
+                // [time, state, isReversing, null, null, message],
+                [0, STATE_STOPPED, null, null, null, 'OFF'],
+                [0, STATE_DELAYING, null, 'timedTransitionRun', 0],
+                [0, STATE_PLAYING, true, 'timedTransitionStart', 0],
+                [LESS_PLAY, STATE_PLAYING, true, null, null, 'OFF(force)'],
+                [LESS_PLAY, STATE_STOPPED, null, 'timedTransitionCancel', LESS_PLAY_S]
+              ]));
+          },
+          // ====================================
+          0, done
+        ]);
       }, LESS_PLAY + WAIT + 1000);
 
       it('play -> revers(force)', function(done) {
+        var logTime;
         transition.off(true);
-        setTimeout(function() {
-          traceLog.length = 0;
-          var logTime = TimedTransition.roundTime(Date.now());
-          utils.initLog();
+        utils.intervalExec([
+          // ====================================
+          100, function() {
+            traceLog.length = 0;
+            logTime = TimedTransition.roundTime(Date.now());
+            utils.initLog();
 
-          utils.addLog('ON', transition);
-          transition.on();
-
-          setTimeout(function() {
+            utils.addLog('ON', transition);
+            transition.on();
+          },
+          // ====================================
+          LESS_PLAY, function() {
             utils.addLog('OFF(force)', transition);
             transition.off(true);
+          },
+          // ====================================
+          WAIT, function() {
+            expect(traceLog).toEqual([
+              '<on>', '_id:' + transition._id, 'state:STATE_STOPPED', 'force:false',
+              'isOn:false', 'runTime:0', 'startTime:0', 'currentPosition:0',
 
-            setTimeout(function() {
-              expect(traceLog).toEqual([
-                '<on>', '_id:' + transition._id, 'state:STATE_STOPPED', 'force:false',
-                'isOn:false', 'runTime:0', 'startTime:0', 'currentPosition:0',
+              '<fixCurrentPosition>', '_id:' + transition._id, 'state:STATE_STOPPED',
+              'currentPosition:0',
+              'CANCEL', '</fixCurrentPosition>',
 
-                '<fixCurrentPosition>', '_id:' + transition._id, 'state:STATE_STOPPED',
-                'currentPosition:0',
-                'CANCEL', '</fixCurrentPosition>',
+              '<abort>', '_id:' + transition._id, 'isOn:false',
+              'CANCEL', '</abort>',
 
-                '<abort>', '_id:' + transition._id, 'isOn:false',
-                'CANCEL', '</abort>',
+              'state:STATE_DELAYING',
 
-                'state:STATE_DELAYING',
+              '<fireEvent>', '_id:' + transition._id, 'state:STATE_DELAYING',
+              'isOn:true', 'runTime:' + logTime, 'startTime:0', 'currentPosition:0',
+              'type:timedTransitionRun',
+              '</fireEvent>',
 
-                '<fireEvent>', '_id:' + transition._id, 'state:STATE_DELAYING',
-                'isOn:true', 'runTime:' + logTime, 'startTime:0', 'currentPosition:0',
-                'type:timedTransitionRun',
-                '</fireEvent>',
+              '<finishDelaying>', '_id:' + transition._id, 'state:STATE_DELAYING',
+              'isOn:true', 'runTime:' + logTime, 'startTime:0', 'currentPosition:0',
+              'state:STATE_PLAYING',
 
-                '<finishDelaying>', '_id:' + transition._id, 'state:STATE_DELAYING',
-                'isOn:true', 'runTime:' + logTime, 'startTime:0', 'currentPosition:0',
-                'state:STATE_PLAYING',
+              '<fireEvent>', '_id:' + transition._id, 'state:STATE_PLAYING',
+              'isOn:true', 'runTime:' + logTime, 'startTime:' + logTime, 'currentPosition:0',
+              'type:timedTransitionStart',
+              '</fireEvent>',
 
-                '<fireEvent>', '_id:' + transition._id, 'state:STATE_PLAYING',
-                'isOn:true', 'runTime:' + logTime, 'startTime:' + logTime, 'currentPosition:0',
-                'type:timedTransitionStart',
-                '</fireEvent>',
+              'durationLeft:' + DURATION,
+              '</finishDelaying>',
 
-                'durationLeft:' + DURATION,
-                '</finishDelaying>',
+              '</on>',
 
-                '</on>',
+              '<off>', '_id:' + transition._id, 'state:STATE_PLAYING', 'force:true',
+              'isOn:true', 'runTime:' + logTime, 'startTime:' + logTime, 'currentPosition:0',
 
-                '<off>', '_id:' + transition._id, 'state:STATE_PLAYING', 'force:true',
-                'isOn:true', 'runTime:' + logTime, 'startTime:' + logTime, 'currentPosition:0',
+              'STOP(force)',
 
-                'STOP(force)',
+              '<abort>', '_id:' + transition._id, 'isOn:true',
+              'state:STATE_STOPPED',
 
-                '<abort>', '_id:' + transition._id, 'isOn:true',
-                'state:STATE_STOPPED',
+              '<fireEvent>', '_id:' + transition._id, 'state:STATE_STOPPED',
+              'isOn:true', 'runTime:' + logTime, 'startTime:' + logTime,
+              'currentPosition:0',
+              'type:timedTransitionCancel',
+              '</fireEvent>',
 
-                '<fireEvent>', '_id:' + transition._id, 'state:STATE_STOPPED',
-                'isOn:true', 'runTime:' + logTime, 'startTime:' + logTime,
-                'currentPosition:0',
-                'type:timedTransitionCancel',
-                '</fireEvent>',
+              '</abort>',
 
-                '</abort>',
+              '<finishAll/>', '_id:' + transition._id, 'isOn:false',
+              'state:STATE_STOPPED',
 
-                '<finishAll/>', '_id:' + transition._id, 'isOn:false',
-                'state:STATE_STOPPED',
+              '</off>'
+            ]);
 
-                '</off>'
-              ]);
-
-              expect(utils.eventLog).toBeEventLog(
-                utils.makeExpectedLog('margin-left', '', true, false, [
-                  // [time, state, isReversing, evtType, evtElapsedTime],
-                  // [time, state, isReversing, null, null, message],
-                  [0, STATE_STOPPED, null, null, null, 'ON'],
-                  [0, STATE_DELAYING, null, 'timedTransitionRun', 0],
-                  [0, STATE_PLAYING, false, 'timedTransitionStart', 0],
-                  [LESS_PLAY, STATE_PLAYING, false, null, null, 'OFF(force)'],
-                  [LESS_PLAY, STATE_STOPPED, null, 'timedTransitionCancel', LESS_PLAY_S]
-                ]));
-
-              done();
-            }, WAIT);
-          }, LESS_PLAY);
-
-        }, 100);
+            expect(utils.eventLog).toBeEventLog(
+              utils.makeExpectedLog('margin-left', '', true, false, [
+                // [time, state, isReversing, evtType, evtElapsedTime],
+                // [time, state, isReversing, null, null, message],
+                [0, STATE_STOPPED, null, null, null, 'ON'],
+                [0, STATE_DELAYING, null, 'timedTransitionRun', 0],
+                [0, STATE_PLAYING, false, 'timedTransitionStart', 0],
+                [LESS_PLAY, STATE_PLAYING, false, null, null, 'OFF(force)'],
+                [LESS_PLAY, STATE_STOPPED, null, 'timedTransitionCancel', LESS_PLAY_S]
+              ]));
+          },
+          // ====================================
+          0, done
+        ]);
       }, LESS_PLAY + WAIT + 1000);
 
       // Other cases
 
       it('play -> play', function(done) {
+        var logTime;
         transition.off(true);
-        setTimeout(function() {
-          traceLog.length = 0;
-          var logTime = TimedTransition.roundTime(Date.now());
-          utils.initLog();
+        utils.intervalExec([
+          // ====================================
+          100, function() {
+            traceLog.length = 0;
+            logTime = TimedTransition.roundTime(Date.now());
+            utils.initLog();
 
-          utils.addLog('ON', transition);
-          transition.on();
-
-          setTimeout(function() {
             utils.addLog('ON', transition);
             transition.on();
+          },
+          // ====================================
+          LESS_PLAY, function() {
+            utils.addLog('ON', transition);
+            transition.on();
+          },
+          // ====================================
+          DURATION - LESS_PLAY + 100, function() {
+            expect(traceLog).toEqual([
+              '<on>', '_id:' + transition._id, 'state:STATE_STOPPED', 'force:false',
+              'isOn:false', 'runTime:0', 'startTime:0', 'currentPosition:0',
 
-            setTimeout(function() {
-              expect(traceLog).toEqual([
-                '<on>', '_id:' + transition._id, 'state:STATE_STOPPED', 'force:false',
-                'isOn:false', 'runTime:0', 'startTime:0', 'currentPosition:0',
+              '<fixCurrentPosition>', '_id:' + transition._id, 'state:STATE_STOPPED',
+              'currentPosition:0',
+              'CANCEL', '</fixCurrentPosition>',
 
-                '<fixCurrentPosition>', '_id:' + transition._id, 'state:STATE_STOPPED',
-                'currentPosition:0',
-                'CANCEL', '</fixCurrentPosition>',
+              '<abort>', '_id:' + transition._id, 'isOn:false',
+              'CANCEL', '</abort>',
 
-                '<abort>', '_id:' + transition._id, 'isOn:false',
-                'CANCEL', '</abort>',
+              'state:STATE_DELAYING',
 
-                'state:STATE_DELAYING',
+              '<fireEvent>', '_id:' + transition._id, 'state:STATE_DELAYING',
+              'isOn:true', 'runTime:' + logTime, 'startTime:0', 'currentPosition:0',
+              'type:timedTransitionRun',
+              '</fireEvent>',
 
-                '<fireEvent>', '_id:' + transition._id, 'state:STATE_DELAYING',
-                'isOn:true', 'runTime:' + logTime, 'startTime:0', 'currentPosition:0',
-                'type:timedTransitionRun',
-                '</fireEvent>',
+              '<finishDelaying>', '_id:' + transition._id, 'state:STATE_DELAYING',
+              'isOn:true', 'runTime:' + logTime, 'startTime:0', 'currentPosition:0',
+              'state:STATE_PLAYING',
 
-                '<finishDelaying>', '_id:' + transition._id, 'state:STATE_DELAYING',
-                'isOn:true', 'runTime:' + logTime, 'startTime:0', 'currentPosition:0',
-                'state:STATE_PLAYING',
+              '<fireEvent>', '_id:' + transition._id, 'state:STATE_PLAYING',
+              'isOn:true', 'runTime:' + logTime, 'startTime:' + logTime, 'currentPosition:0',
+              'type:timedTransitionStart',
+              '</fireEvent>',
 
-                '<fireEvent>', '_id:' + transition._id, 'state:STATE_PLAYING',
-                'isOn:true', 'runTime:' + logTime, 'startTime:' + logTime, 'currentPosition:0',
-                'type:timedTransitionStart',
-                '</fireEvent>',
+              'durationLeft:' + DURATION,
+              '</finishDelaying>',
 
-                'durationLeft:' + DURATION,
-                '</finishDelaying>',
+              '</on>',
 
-                '</on>',
+              '<on>', '_id:' + transition._id, 'state:STATE_PLAYING', 'force:false',
+              'isOn:true', 'runTime:' + logTime, 'startTime:' + logTime, 'currentPosition:0',
+              'CANCEL', '</on>',
 
-                '<on>', '_id:' + transition._id, 'state:STATE_PLAYING', 'force:false',
-                'isOn:true', 'runTime:' + logTime, 'startTime:' + logTime, 'currentPosition:0',
-                'CANCEL', '</on>',
+              '<finishPlaying>', '_id:' + transition._id, 'state:STATE_PLAYING',
+              'isOn:true', 'runTime:' + logTime, 'startTime:' + logTime, 'currentPosition:0',
+              'state:STATE_STOPPED',
 
-                '<finishPlaying>', '_id:' + transition._id, 'state:STATE_PLAYING',
-                'isOn:true', 'runTime:' + logTime, 'startTime:' + logTime, 'currentPosition:0',
-                'state:STATE_STOPPED',
+              '<fireEvent>', '_id:' + transition._id, 'state:STATE_STOPPED',
+              'isOn:true', 'runTime:' + logTime, 'startTime:' + logTime, 'currentPosition:0',
+              'type:timedTransitionEnd',
+              '</fireEvent>',
 
-                '<fireEvent>', '_id:' + transition._id, 'state:STATE_STOPPED',
-                'isOn:true', 'runTime:' + logTime, 'startTime:' + logTime, 'currentPosition:0',
-                'type:timedTransitionEnd',
-                '</fireEvent>',
+              '<finishAll/>', '_id:' + transition._id, 'isOn:true',
+              'state:STATE_STOPPED',
 
-                '<finishAll/>', '_id:' + transition._id, 'isOn:true',
-                'state:STATE_STOPPED',
+              '</finishPlaying>'
+            ]);
 
-                '</finishPlaying>'
-              ]);
-
-              expect(utils.eventLog).toBeEventLog(
-                utils.makeExpectedLog('margin-left', '', true, false, [
-                  // [time, state, isReversing, evtType, evtElapsedTime],
-                  // [time, state, isReversing, null, null, message],
-                  [0, STATE_STOPPED, null, null, null, 'ON'],
-                  [0, STATE_DELAYING, null, 'timedTransitionRun', 0],
-                  [0, STATE_PLAYING, false, 'timedTransitionStart', 0],
-                  [LESS_PLAY, STATE_PLAYING, false, null, null, 'ON'],
-                  [DURATION, STATE_STOPPED, null, 'timedTransitionEnd', DURATION_S]
-                ]));
-
-              done();
-            }, DURATION - LESS_PLAY + 100);
-          }, LESS_PLAY);
-
-        }, 100);
+            expect(utils.eventLog).toBeEventLog(
+              utils.makeExpectedLog('margin-left', '', true, false, [
+                // [time, state, isReversing, evtType, evtElapsedTime],
+                // [time, state, isReversing, null, null, message],
+                [0, STATE_STOPPED, null, null, null, 'ON'],
+                [0, STATE_DELAYING, null, 'timedTransitionRun', 0],
+                [0, STATE_PLAYING, false, 'timedTransitionStart', 0],
+                [LESS_PLAY, STATE_PLAYING, false, null, null, 'ON'],
+                [DURATION, STATE_STOPPED, null, 'timedTransitionEnd', DURATION_S]
+              ]));
+          },
+          // ====================================
+          0, done
+        ]);
       }, DURATION + 1000);
 
       it('revers -> revers', function(done) {
+        var logTime;
         transition.on(true);
-        setTimeout(function() {
-          traceLog.length = 0;
-          var logTime = TimedTransition.roundTime(Date.now());
-          utils.initLog();
+        utils.intervalExec([
+          // ====================================
+          100, function() {
+            traceLog.length = 0;
+            logTime = TimedTransition.roundTime(Date.now());
+            utils.initLog();
 
-          utils.addLog('OFF', transition);
-          transition.off();
-
-          setTimeout(function() {
             utils.addLog('OFF', transition);
             transition.off();
+          },
+          // ====================================
+          LESS_PLAY, function() {
+            utils.addLog('OFF', transition);
+            transition.off();
+          },
+          // ====================================
+          DURATION - LESS_PLAY + 100, function() {
+            expect(traceLog).toEqual([
+              '<off>', '_id:' + transition._id, 'state:STATE_STOPPED', 'force:false',
+              'isOn:true', 'runTime:0', 'startTime:0', 'currentPosition:' + DURATION,
 
-            setTimeout(function() {
-              expect(traceLog).toEqual([
-                '<off>', '_id:' + transition._id, 'state:STATE_STOPPED', 'force:false',
-                'isOn:true', 'runTime:0', 'startTime:0', 'currentPosition:' + DURATION,
+              '<fixCurrentPosition>', '_id:' + transition._id, 'state:STATE_STOPPED',
+              'currentPosition:' + DURATION,
+              'CANCEL', '</fixCurrentPosition>',
 
-                '<fixCurrentPosition>', '_id:' + transition._id, 'state:STATE_STOPPED',
-                'currentPosition:' + DURATION,
-                'CANCEL', '</fixCurrentPosition>',
+              '<abort>', '_id:' + transition._id, 'isOn:true',
+              'CANCEL', '</abort>',
 
-                '<abort>', '_id:' + transition._id, 'isOn:true',
-                'CANCEL', '</abort>',
+              'state:STATE_DELAYING',
 
-                'state:STATE_DELAYING',
+              '<fireEvent>', '_id:' + transition._id, 'state:STATE_DELAYING',
+              'isOn:false', 'runTime:' + logTime, 'startTime:0',
+              'currentPosition:' + DURATION,
+              'type:timedTransitionRun',
+              '</fireEvent>',
 
-                '<fireEvent>', '_id:' + transition._id, 'state:STATE_DELAYING',
-                'isOn:false', 'runTime:' + logTime, 'startTime:0',
-                'currentPosition:' + DURATION,
-                'type:timedTransitionRun',
-                '</fireEvent>',
+              '<finishDelaying>', '_id:' + transition._id, 'state:STATE_DELAYING',
+              'isOn:false', 'runTime:' + logTime, 'startTime:0',
+              'currentPosition:' + DURATION,
+              'state:STATE_PLAYING',
 
-                '<finishDelaying>', '_id:' + transition._id, 'state:STATE_DELAYING',
-                'isOn:false', 'runTime:' + logTime, 'startTime:0',
-                'currentPosition:' + DURATION,
-                'state:STATE_PLAYING',
+              '<fireEvent>', '_id:' + transition._id, 'state:STATE_PLAYING',
+              'isOn:false', 'runTime:' + logTime, 'startTime:' + logTime,
+              'currentPosition:' + DURATION,
+              'type:timedTransitionStart',
+              '</fireEvent>',
 
-                '<fireEvent>', '_id:' + transition._id, 'state:STATE_PLAYING',
-                'isOn:false', 'runTime:' + logTime, 'startTime:' + logTime,
-                'currentPosition:' + DURATION,
-                'type:timedTransitionStart',
-                '</fireEvent>',
+              'durationLeft:' + DURATION,
+              '</finishDelaying>',
 
-                'durationLeft:' + DURATION,
-                '</finishDelaying>',
+              '</off>',
 
-                '</off>',
+              '<off>', '_id:' + transition._id, 'state:STATE_PLAYING', 'force:false',
+              'isOn:false', 'runTime:' + logTime, 'startTime:' + logTime,
+              'currentPosition:' + DURATION,
+              'CANCEL', '</off>',
 
-                '<off>', '_id:' + transition._id, 'state:STATE_PLAYING', 'force:false',
-                'isOn:false', 'runTime:' + logTime, 'startTime:' + logTime,
-                'currentPosition:' + DURATION,
-                'CANCEL', '</off>',
+              '<finishPlaying>', '_id:' + transition._id, 'state:STATE_PLAYING',
+              'isOn:false', 'runTime:' + logTime, 'startTime:' + logTime,
+              'currentPosition:' + DURATION,
+              'state:STATE_STOPPED',
 
-                '<finishPlaying>', '_id:' + transition._id, 'state:STATE_PLAYING',
-                'isOn:false', 'runTime:' + logTime, 'startTime:' + logTime,
-                'currentPosition:' + DURATION,
-                'state:STATE_STOPPED',
+              '<fireEvent>', '_id:' + transition._id, 'state:STATE_STOPPED',
+              'isOn:false', 'runTime:' + logTime, 'startTime:' + logTime,
+              'currentPosition:' + DURATION,
+              'type:timedTransitionEnd',
+              '</fireEvent>',
 
-                '<fireEvent>', '_id:' + transition._id, 'state:STATE_STOPPED',
-                'isOn:false', 'runTime:' + logTime, 'startTime:' + logTime,
-                'currentPosition:' + DURATION,
-                'type:timedTransitionEnd',
-                '</fireEvent>',
+              '<finishAll/>', '_id:' + transition._id, 'isOn:false',
+              'state:STATE_STOPPED',
 
-                '<finishAll/>', '_id:' + transition._id, 'isOn:false',
-                'state:STATE_STOPPED',
+              '</finishPlaying>'
+            ]);
 
-                '</finishPlaying>'
-              ]);
-
-              expect(utils.eventLog).toBeEventLog(
-                utils.makeExpectedLog('margin-left', '', true, false, [
-                  // [time, state, isReversing, evtType, evtElapsedTime],
-                  // [time, state, isReversing, null, null, message],
-                  [0, STATE_STOPPED, null, null, null, 'OFF'],
-                  [0, STATE_DELAYING, null, 'timedTransitionRun', 0],
-                  [0, STATE_PLAYING, true, 'timedTransitionStart', 0],
-                  [LESS_PLAY, STATE_PLAYING, true, null, null, 'OFF'],
-                  [DURATION, STATE_STOPPED, null, 'timedTransitionEnd', DURATION_S]
-                ]));
-
-              done();
-            }, DURATION - LESS_PLAY + 100);
-          }, LESS_PLAY);
-
-        }, 100);
+            expect(utils.eventLog).toBeEventLog(
+              utils.makeExpectedLog('margin-left', '', true, false, [
+                // [time, state, isReversing, evtType, evtElapsedTime],
+                // [time, state, isReversing, null, null, message],
+                [0, STATE_STOPPED, null, null, null, 'OFF'],
+                [0, STATE_DELAYING, null, 'timedTransitionRun', 0],
+                [0, STATE_PLAYING, true, 'timedTransitionStart', 0],
+                [LESS_PLAY, STATE_PLAYING, true, null, null, 'OFF'],
+                [DURATION, STATE_STOPPED, null, 'timedTransitionEnd', DURATION_S]
+              ]));
+          },
+          // ====================================
+          0, done
+        ]);
       }, DURATION + 1000);
 
       it('play after play', function(done) {
         transition.on(true);
-        setTimeout(function() {
-          traceLog.length = 0;
-          utils.initLog();
+        utils.intervalExec([
+          // ====================================
+          100, function() {
+            traceLog.length = 0;
+            utils.initLog();
 
-          utils.addLog('ON', transition);
-          transition.on();
-
-          setTimeout(function() {
+            utils.addLog('ON', transition);
+            transition.on();
+          },
+          // ====================================
+          WAIT + 100, function() {
             expect(traceLog).toEqual([
               '<on>', '_id:' + transition._id, 'state:STATE_STOPPED', 'force:false',
               'isOn:true', 'runTime:0', 'startTime:0', 'currentPosition:' + DURATION,
@@ -1731,23 +1768,25 @@ describe('child window', function() {
                 // [time, state, isReversing, null, null, message],
                 [0, STATE_STOPPED, null, null, null, 'ON']
               ]));
-
-            done();
-          }, WAIT + 100);
-
-        }, 100);
+          },
+          // ====================================
+          0, done
+        ]);
       }, WAIT + 1000);
 
       it('revers after revers', function(done) {
         transition.off(true);
-        setTimeout(function() {
-          traceLog.length = 0;
-          utils.initLog();
+        utils.intervalExec([
+          // ====================================
+          100, function() {
+            traceLog.length = 0;
+            utils.initLog();
 
-          utils.addLog('OFF', transition);
-          transition.off();
-
-          setTimeout(function() {
+            utils.addLog('OFF', transition);
+            transition.off();
+          },
+          // ====================================
+          WAIT + 100, function() {
             expect(traceLog).toEqual([
               '<off>', '_id:' + transition._id, 'state:STATE_STOPPED', 'force:false',
               'isOn:false', 'runTime:0', 'startTime:0', 'currentPosition:0',
@@ -1760,23 +1799,25 @@ describe('child window', function() {
                 // [time, state, isReversing, null, null, message],
                 [0, STATE_STOPPED, null, null, null, 'OFF']
               ]));
-
-            done();
-          }, WAIT + 100);
-
-        }, 100);
+          },
+          // ====================================
+          0, done
+        ]);
       }, WAIT + 1000);
 
       it('play(force) after play', function(done) {
         transition.on(true);
-        setTimeout(function() {
-          traceLog.length = 0;
-          utils.initLog();
+        utils.intervalExec([
+          // ====================================
+          100, function() {
+            traceLog.length = 0;
+            utils.initLog();
 
-          utils.addLog('ON(force)', transition);
-          transition.on(true);
-
-          setTimeout(function() {
+            utils.addLog('ON(force)', transition);
+            transition.on(true);
+          },
+          // ====================================
+          WAIT + 100, function() {
             expect(traceLog).toEqual([
               '<on>', '_id:' + transition._id, 'state:STATE_STOPPED', 'force:true',
               'isOn:true', 'runTime:0', 'startTime:0', 'currentPosition:' + DURATION,
@@ -1789,23 +1830,25 @@ describe('child window', function() {
                 // [time, state, isReversing, null, null, message],
                 [0, STATE_STOPPED, null, null, null, 'ON(force)']
               ]));
-
-            done();
-          }, WAIT + 100);
-
-        }, 100);
+          },
+          // ====================================
+          0, done
+        ]);
       }, WAIT + 1000);
 
       it('revers(force) after revers', function(done) {
         transition.off(true);
-        setTimeout(function() {
-          traceLog.length = 0;
-          utils.initLog();
+        utils.intervalExec([
+          // ====================================
+          100, function() {
+            traceLog.length = 0;
+            utils.initLog();
 
-          utils.addLog('OFF(force)', transition);
-          transition.off(true);
-
-          setTimeout(function() {
+            utils.addLog('OFF(force)', transition);
+            transition.off(true);
+          },
+          // ====================================
+          WAIT + 100, function() {
             expect(traceLog).toEqual([
               '<off>', '_id:' + transition._id, 'state:STATE_STOPPED', 'force:true',
               'isOn:false', 'runTime:0', 'startTime:0', 'currentPosition:0',
@@ -1818,11 +1861,10 @@ describe('child window', function() {
                 // [time, state, isReversing, null, null, message],
                 [0, STATE_STOPPED, null, null, null, 'OFF(force)']
               ]));
-
-            done();
-          }, WAIT + 100);
-
-        }, 100);
+          },
+          // ====================================
+          0, done
+        ]);
       }, WAIT + 1000);
     });
 

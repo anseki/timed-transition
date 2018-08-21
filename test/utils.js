@@ -1,9 +1,37 @@
 /* exported utils */
 /* eslint-env browser */
-/* eslint no-var: "off", prefer-arrow-callback: "off", object-shorthand: "off" */
+/* eslint no-var: off, prefer-arrow-callback: off, object-shorthand: off */
 
 var utils = (function() {
   'use strict';
+
+  var DEFAULT_INTERVAL = 10;
+
+  function intervalExec(list) {
+    var interval = 1, // default value for first
+      index = -1;
+
+    function execNext() {
+      var fnc;
+      while (++index <= list.length - 1) {
+        if (typeof list[index] === 'number') {
+          interval = list[index];
+        } else if (typeof list[index] === 'function') {
+          fnc = list[index];
+          break;
+        }
+      }
+      if (fnc) {
+        setTimeout(function() {
+          fnc();
+          interval = DEFAULT_INTERVAL;
+          execNext();
+        }, interval);
+      }
+    }
+
+    execNext();
+  }
 
   /**
    * An object that is a log record.
@@ -195,6 +223,7 @@ var utils = (function() {
   };
 
   return {
+    intervalExec: intervalExec,
     eventLog: eventLog,
     addLog: addLog,
     initLog: initLog,
