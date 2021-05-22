@@ -1,15 +1,13 @@
-/* line 5, default.scss */
-.target-nodelay,
+.target-opacity, .target-nodelay,
 .target-delay-3s,
 .target-delay-m3s,
 .target-delay-m1s,
-.target-delay-m8s, .target-opacity {
-  -webkit-tap-highlight-color: transparent;
+.target-delay-m8s {
+  -webkit-tap-highlight-color: rgba(0, 0, 0, 0);
   transform: translateZ(0);
-  box-shadow: 0 0 1px transparent;
+  box-shadow: 0 0 1px rgba(0, 0, 0, 0);
 }
 
-/* line 7, default.scss */
 .target-nodelay,
 .target-delay-3s,
 .target-delay-m3s,
@@ -18,21 +16,11 @@
   width: 100px;
   height: 100px;
   background-color: #21b7bd;
-  -moz-transition-property: margin-left;
-  -o-transition-property: margin-left;
-  -webkit-transition-property: margin-left;
   transition-property: margin-left;
-  -moz-transition-duration: 5000ms;
-  -o-transition-duration: 5000ms;
-  -webkit-transition-duration: 5000ms;
   transition-duration: 5000ms;
-  -moz-transition-timing-function: linear;
-  -o-transition-timing-function: linear;
-  -webkit-transition-timing-function: linear;
   transition-timing-function: linear;
   margin-left: 0;
 }
-/* line 22, default.scss */
 .target-nodelay.on,
 .target-delay-3s.on,
 .target-delay-m3s.on,
@@ -40,76 +28,41 @@
 .target-delay-m8s.on {
   margin-left: 600px;
 }
-/* line 26, default.scss */
 .target-nodelay.force,
 .target-delay-3s.force,
 .target-delay-m3s.force,
 .target-delay-m1s.force,
 .target-delay-m8s.force {
-  -moz-transition-property: none;
-  -o-transition-property: none;
-  -webkit-transition-property: none;
   transition-property: none;
 }
 
-/* line 31, default.scss */
 .target-delay-3s {
-  -moz-transition-delay: 3000ms;
-  -o-transition-delay: 3000ms;
-  -webkit-transition-delay: 3000ms;
   transition-delay: 3000ms;
 }
 
-/* line 35, default.scss */
 .target-delay-m3s {
-  -moz-transition-delay: -3000ms;
-  -o-transition-delay: -3000ms;
-  -webkit-transition-delay: -3000ms;
   transition-delay: -3000ms;
 }
 
-/* line 39, default.scss */
 .target-delay-m1s {
-  -moz-transition-delay: -1000ms;
-  -o-transition-delay: -1000ms;
-  -webkit-transition-delay: -1000ms;
   transition-delay: -1000ms;
 }
 
-/* line 43, default.scss */
 .target-delay-m8s {
-  -moz-transition-delay: -8000ms;
-  -o-transition-delay: -8000ms;
-  -webkit-transition-delay: -8000ms;
   transition-delay: -8000ms;
 }
 
-/* line 47, default.scss */
 .target-opacity {
   height: 100px;
   background-color: blue;
-  -moz-transition-property: opacity;
-  -o-transition-property: opacity;
-  -webkit-transition-property: opacity;
   transition-property: opacity;
-  -moz-transition-duration: 5000ms;
-  -o-transition-duration: 5000ms;
-  -webkit-transition-duration: 5000ms;
   transition-duration: 5000ms;
-  -moz-transition-timing-function: linear;
-  -o-transition-timing-function: linear;
-  -webkit-transition-timing-function: linear;
   transition-timing-function: linear;
   opacity: 0;
 }
-/* line 57, default.scss */
 .target-opacity.on {
   opacity: 1;
 }
-/* line 61, default.scss */
 .target-opacity.force {
-  -moz-transition-property: none;
-  -o-transition-property: none;
-  -webkit-transition-property: none;
   transition-property: none;
 }
