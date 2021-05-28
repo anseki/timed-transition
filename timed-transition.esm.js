@@ -2,9 +2,11 @@
         DON'T MANUALLY EDIT THIS FILE
 ================================================ */
 
-var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
-
 function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+
+function _defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } }
+
+function _createClass(Constructor, protoProps, staticProps) { if (protoProps) _defineProperties(Constructor.prototype, protoProps); if (staticProps) _defineProperties(Constructor, staticProps); return Constructor; }
 
 /*
  * TimedTransition
@@ -13,22 +15,20 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
  * Copyright (c) 2018 anseki
  * Licensed under the MIT license.
  */
-
 import CSSPrefix from 'cssprefix';
 
 var STATE_STOPPED = 0,
     STATE_DELAYING = 1,
     STATE_PLAYING = 2,
     PREFIX = 'timed',
-    EVENT_TYPE_RUN = PREFIX + 'TransitionRun',
-    EVENT_TYPE_START = PREFIX + 'TransitionStart',
-    EVENT_TYPE_END = PREFIX + 'TransitionEnd',
-    EVENT_TYPE_CANCEL = PREFIX + 'TransitionCancel',
+    EVENT_TYPE_RUN = "".concat(PREFIX, "TransitionRun"),
+    EVENT_TYPE_START = "".concat(PREFIX, "TransitionStart"),
+    EVENT_TYPE_END = "".concat(PREFIX, "TransitionEnd"),
+    EVENT_TYPE_CANCEL = "".concat(PREFIX, "TransitionCancel"),
     IS_EDGE = '-ms-scroll-limit' in document.documentElement.style && '-ms-ime-align' in document.documentElement.style && !window.navigator.msPointerEnabled,
     isFinite = Number.isFinite || function (value) {
   return typeof value === 'number' && window.isFinite(value);
 },
-
 
 /**
  * An object that has properties of instance.
@@ -51,19 +51,18 @@ var STATE_STOPPED = 0,
 insProps = {};
 
 var insId = 0;
-
 /**
  * @param {props} props - `props` of instance.
  * @param {string} type - One of EVENT_TYPE_*.
  * @returns {void}
  */
+
 function fireEvent(props, type) {
   var initTime = Math.min(Math.max(-props.delay, 0), props.duration),
-      elapsedTime = (initTime + (
-  // The value for transitionend might NOT be transition-duration. (csswg.org may be wrong)
+      elapsedTime = (initTime + ( // The value for transitionend might NOT be transition-duration. (csswg.org may be wrong)
   (type === EVENT_TYPE_END || type === EVENT_TYPE_CANCEL) && props.startTime ? Date.now() - props.startTime : 0)) / 1000;
+  var event;
 
-  var event = void 0;
   try {
     event = new props.window.TransitionEvent(type, {
       propertyName: props.options.property,
@@ -71,8 +70,8 @@ function fireEvent(props, type) {
       elapsedTime: elapsedTime,
       bubbles: true,
       cancelable: false
-    });
-    // Edge bug, can't set pseudoElement
+    }); // Edge bug, can't set pseudoElement
+
     if (IS_EDGE) {
       event.pseudoElement = props.options.pseudoElement;
     }
@@ -81,38 +80,43 @@ function fireEvent(props, type) {
     event.initTransitionEvent(type, true, false, props.options.property, elapsedTime);
     event.pseudoElement = props.options.pseudoElement;
   }
+
   event.timedTransition = props.ins;
   props.element.dispatchEvent(event);
 }
-
 /**
  * @param {props} props - `props` of instance.
  * @returns {void}
  */
+
+
 function fixCurrentPosition(props) {
   if (props.state !== STATE_PLAYING) {
     return;
   }
+
   var playingTime = Date.now() - props.startTime;
   props.currentPosition = props.isOn ? Math.min(props.currentPosition + playingTime, props.duration) : Math.max(props.currentPosition - playingTime, 0);
 }
-
 /**
  * Finish the "on/off" immediately by isOn.
  * @param {props} props - `props` of instance.
  * @returns {void}
  */
+
+
 function finishAll(props) {
   props.state = STATE_STOPPED;
   props.runTime = 0;
   props.startTime = 0;
   props.currentPosition = props.isOn ? props.duration : 0;
 }
-
 /**
  * @param {props} props - `props` of instance.
  * @returns {void}
  */
+
+
 function finishPlaying(props) {
   if (props.state !== STATE_PLAYING) {
     return;
@@ -120,14 +124,14 @@ function finishPlaying(props) {
 
   props.state = STATE_STOPPED;
   fireEvent(props, EVENT_TYPE_END);
-
   finishAll(props);
 }
-
 /**
  * @param {props} props - `props` of instance.
  * @returns {void}
  */
+
+
 function finishDelaying(props) {
   if (props.state !== STATE_DELAYING) {
     return;
@@ -137,8 +141,8 @@ function finishDelaying(props) {
   props.startTime = Date.now();
   props.isReversing = !props.isOn;
   fireEvent(props, EVENT_TYPE_START);
-
   var durationLeft = props.isOn ? props.duration - props.currentPosition : props.currentPosition;
+
   if (durationLeft > 0) {
     props.timer = setTimeout(function () {
       finishPlaying(props);
@@ -147,13 +151,15 @@ function finishDelaying(props) {
     finishPlaying(props);
   }
 }
-
 /**
  * @param {props} props - `props` of instance.
  * @returns {void}
  */
+
+
 function abort(props) {
   clearTimeout(props.timer);
+
   if (props.state === STATE_STOPPED) {
     return;
   }
@@ -161,13 +167,14 @@ function abort(props) {
   props.state = STATE_STOPPED;
   fireEvent(props, EVENT_TYPE_CANCEL);
 }
-
 /**
  * @param {props} props - `props` of instance.
  * @param {boolean} force - Skip transition.
  * @param {Array} args - Arguments that are passed to procToOn.
  * @returns {void}
  */
+
+
 function _on(props, force, args) {
   if (props.isOn && props.state === STATE_STOPPED || props.isOn && props.state !== STATE_STOPPED && !force) {
     return;
@@ -177,6 +184,7 @@ function _on(props, force, args) {
       - Done `off` or playing to `off`, regardless of `force`
       - Playing to `on` and `force`
   */
+
 
   if (props.options.procToOn) {
     args.unshift(!!force);
@@ -191,7 +199,6 @@ function _on(props, force, args) {
   } else {
     fixCurrentPosition(props);
     abort(props);
-
     props.state = STATE_DELAYING;
     props.isOn = true;
     props.runTime = Date.now();
@@ -207,17 +214,19 @@ function _on(props, force, args) {
         // Move the position to the right.
         props.currentPosition = Math.min(props.currentPosition - props.delay, props.duration);
       }
+
       finishDelaying(props);
     }
   }
 }
-
 /**
  * @param {props} props - `props` of instance.
  * @param {boolean} force - Skip transition.
  * @param {Array} args - Arguments that are passed to procToOff.
  * @returns {void}
  */
+
+
 function _off(props, force, args) {
   if (!props.isOn && props.state === STATE_STOPPED || !props.isOn && props.state !== STATE_STOPPED && !force) {
     return;
@@ -227,6 +236,7 @@ function _off(props, force, args) {
       - Done `on` or playing to `on`, regardless of `force`
       - Playing to `off` and `force`
   */
+
 
   if (props.options.procToOff) {
     args.unshift(!!force);
@@ -241,7 +251,6 @@ function _off(props, force, args) {
   } else {
     fixCurrentPosition(props);
     abort(props);
-
     props.state = STATE_DELAYING;
     props.isOn = false;
     props.runTime = Date.now();
@@ -257,56 +266,58 @@ function _off(props, force, args) {
         // Move the position to the left.
         props.currentPosition = Math.max(props.currentPosition + props.delay, 0);
       }
+
       finishDelaying(props);
     }
   }
 }
-
 /**
  * @param {props} props - `props` of instance.
  * @param {Object} newOptions - New options.
  * @returns {void}
  */
+
+
 function _setOptions(props, newOptions) {
   var options = props.options;
 
   function parseAsCss(option) {
     var optionValue = typeof newOptions[option] === 'number' // From CSS
-    ? (props.window.getComputedStyle(props.element, '')[CSSPrefix.getName('transition-' + option)] || '').split(',')[newOptions[option]] : newOptions[option];
+    ? (props.window.getComputedStyle(props.element, '')[CSSPrefix.getName("transition-".concat(option))] || '').split(',')[newOptions[option]] : newOptions[option];
     return typeof optionValue === 'string' ? optionValue.trim() : null;
-  }
+  } // pseudoElement
 
-  // pseudoElement
+
   if (typeof newOptions.pseudoElement === 'string') {
     options.pseudoElement = newOptions.pseudoElement;
-  }
+  } // property
 
-  // property
+
   {
     var value = parseAsCss('property');
+
     if (typeof value === 'string' && value !== 'all' && value !== 'none') {
       options.property = value;
     }
-  }
+  } // duration, delay
 
-  // duration, delay
   ['duration', 'delay'].forEach(function (option) {
     var value = parseAsCss(option);
+
     if (typeof value === 'string') {
-      var matches = void 0,
-          timeValue = void 0;
+      var matches, timeValue;
+
       if (/^[0.]+$/.test(value)) {
         // This is invalid for CSS.
         options[option] = '0s';
         props[option] = 0;
       } else if ((matches = /^(.+?)(m)?s$/.exec(value)) && isFinite(timeValue = parseFloat(matches[1])) && (option !== 'duration' || timeValue >= 0)) {
-        options[option] = '' + timeValue + (matches[2] || '') + 's';
+        options[option] = "".concat(timeValue).concat(matches[2] || '', "s");
         props[option] = timeValue * (matches[2] ? 1 : 1000);
       }
     }
-  });
+  }); // procToOn, procToOff
 
-  // procToOn, procToOff
   ['procToOn', 'procToOff'].forEach(function (option) {
     if (typeof newOptions[option] === 'function') {
       options[option] = newOptions[option];
@@ -316,7 +327,7 @@ function _setOptions(props, newOptions) {
   });
 }
 
-var TimedTransition = function () {
+var TimedTransition = /*#__PURE__*/function () {
   /**
    * Create a `TimedTransition` instance.
    * @param {Element} element - Target element.
@@ -328,7 +339,8 @@ var TimedTransition = function () {
 
     var props = {
       ins: this,
-      options: { // Initial options (not default)
+      options: {
+        // Initial options (not default)
         pseudoElement: '',
         property: ''
       },
@@ -336,57 +348,62 @@ var TimedTransition = function () {
       delay: 0,
       isOn: !!initOn
     };
-
-    Object.defineProperty(this, '_id', { value: ++insId });
+    Object.defineProperty(this, '_id', {
+      value: ++insId
+    });
     props._id = this._id;
     insProps[this._id] = props;
 
     if (!element.nodeType || element.nodeType !== Node.ELEMENT_NODE) {
       throw new Error('This `element` is not accepted.');
     }
+
     props.element = element;
+
     if (!options) {
       options = {};
     }
-    props.window = element.ownerDocument.defaultView || options.window || window;
 
-    // Default options
+    props.window = element.ownerDocument.defaultView || options.window || window; // Default options
+
     if (!options.hasOwnProperty('property')) {
       options.property = 0;
     }
+
     if (!options.hasOwnProperty('duration')) {
       options.duration = 0;
     }
+
     if (!options.hasOwnProperty('delay')) {
       options.delay = 0;
     }
 
     _setOptions(props, options);
+
     finishAll(props);
   }
 
   _createClass(TimedTransition, [{
-    key: 'remove',
+    key: "remove",
     value: function remove() {
       var props = insProps[this._id];
       clearTimeout(props.timer);
       delete insProps[this._id];
     }
-
     /**
      * @param {Object} options - New options.
      * @returns {TimedTransition} Current instance itself.
      */
 
   }, {
-    key: 'setOptions',
+    key: "setOptions",
     value: function setOptions(options) {
       if (options) {
         _setOptions(insProps[this._id], options);
       }
+
       return this;
     }
-
     /**
      * Set `on`.
      * @param {boolean} [force] - Set `on` it immediately without transition.
@@ -396,7 +413,7 @@ var TimedTransition = function () {
      */
 
   }, {
-    key: 'on',
+    key: "on",
     value: function on(force, options) {
       if (arguments.length < 2 && typeof force !== 'boolean') {
         options = force;
@@ -404,10 +421,11 @@ var TimedTransition = function () {
       }
 
       this.setOptions(options);
+
       _on(insProps[this._id], force, Array.prototype.slice.call(arguments, 2));
+
       return this;
     }
-
     /**
      * Set 'off'.
      * @param {boolean} [force] - Set `off` it immediately without transition.
@@ -417,7 +435,7 @@ var TimedTransition = function () {
      */
 
   }, {
-    key: 'off',
+    key: "off",
     value: function off(force, options) {
       if (arguments.length < 2 && typeof force !== 'boolean') {
         options = force;
@@ -425,84 +443,98 @@ var TimedTransition = function () {
       }
 
       this.setOptions(options);
+
       _off(insProps[this._id], force, Array.prototype.slice.call(arguments, 2));
+
       return this;
     }
   }, {
-    key: 'state',
+    key: "state",
     get: function get() {
       return insProps[this._id].state;
     }
   }, {
-    key: 'element',
+    key: "element",
     get: function get() {
       return insProps[this._id].element;
     }
   }, {
-    key: 'isReversing',
+    key: "isReversing",
     get: function get() {
       return insProps[this._id].isReversing;
     }
   }, {
-    key: 'pseudoElement',
+    key: "pseudoElement",
     get: function get() {
       return insProps[this._id].options.pseudoElement;
     },
     set: function set(value) {
-      _setOptions(insProps[this._id], { pseudoElement: value });
+      _setOptions(insProps[this._id], {
+        pseudoElement: value
+      });
     }
   }, {
-    key: 'property',
+    key: "property",
     get: function get() {
       return insProps[this._id].options.property;
     },
     set: function set(value) {
-      _setOptions(insProps[this._id], { property: value });
+      _setOptions(insProps[this._id], {
+        property: value
+      });
     }
   }, {
-    key: 'duration',
+    key: "duration",
     get: function get() {
       return insProps[this._id].options.duration;
     },
     set: function set(value) {
-      _setOptions(insProps[this._id], { duration: value });
+      _setOptions(insProps[this._id], {
+        duration: value
+      });
     }
   }, {
-    key: 'delay',
+    key: "delay",
     get: function get() {
       return insProps[this._id].options.delay;
     },
     set: function set(value) {
-      _setOptions(insProps[this._id], { delay: value });
+      _setOptions(insProps[this._id], {
+        delay: value
+      });
     }
   }, {
-    key: 'procToOn',
+    key: "procToOn",
     get: function get() {
       return insProps[this._id].options.procToOn;
     },
     set: function set(value) {
-      _setOptions(insProps[this._id], { procToOn: value });
+      _setOptions(insProps[this._id], {
+        procToOn: value
+      });
     }
   }, {
-    key: 'procToOff',
+    key: "procToOff",
     get: function get() {
       return insProps[this._id].options.procToOff;
     },
     set: function set(value) {
-      _setOptions(insProps[this._id], { procToOff: value });
+      _setOptions(insProps[this._id], {
+        procToOff: value
+      });
     }
   }], [{
-    key: 'STATE_STOPPED',
+    key: "STATE_STOPPED",
     get: function get() {
       return STATE_STOPPED;
     }
   }, {
-    key: 'STATE_DELAYING',
+    key: "STATE_DELAYING",
     get: function get() {
       return STATE_DELAYING;
     }
   }, {
-    key: 'STATE_PLAYING',
+    key: "STATE_PLAYING",
     get: function get() {
       return STATE_PLAYING;
     }

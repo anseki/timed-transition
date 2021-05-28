@@ -289,9 +289,11 @@ var CSSPrefix = {
 "use strict";
 __webpack_require__.r(__webpack_exports__);
 /* harmony import */ var cssprefix__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! cssprefix */ "./node_modules/cssprefix/cssprefix.esm.js");
-var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
-
 function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+
+function _defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } }
+
+function _createClass(Constructor, protoProps, staticProps) { if (protoProps) _defineProperties(Constructor.prototype, protoProps); if (staticProps) _defineProperties(Constructor, staticProps); return Constructor; }
 
 /*
  * TimedTransition
@@ -302,20 +304,18 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
  */
 
 
-
 var STATE_STOPPED = 0,
     STATE_DELAYING = 1,
     STATE_PLAYING = 2,
     PREFIX = 'timed',
-    EVENT_TYPE_RUN = PREFIX + 'TransitionRun',
-    EVENT_TYPE_START = PREFIX + 'TransitionStart',
-    EVENT_TYPE_END = PREFIX + 'TransitionEnd',
-    EVENT_TYPE_CANCEL = PREFIX + 'TransitionCancel',
+    EVENT_TYPE_RUN = "".concat(PREFIX, "TransitionRun"),
+    EVENT_TYPE_START = "".concat(PREFIX, "TransitionStart"),
+    EVENT_TYPE_END = "".concat(PREFIX, "TransitionEnd"),
+    EVENT_TYPE_CANCEL = "".concat(PREFIX, "TransitionCancel"),
     IS_EDGE = '-ms-scroll-limit' in document.documentElement.style && '-ms-ime-align' in document.documentElement.style && !window.navigator.msPointerEnabled,
     isFinite = Number.isFinite || function (value) {
   return typeof value === 'number' && window.isFinite(value);
 },
-
 
 /**
  * An object that has properties of instance.
@@ -337,14 +337,14 @@ var STATE_STOPPED = 0,
 /** @type {Object.<_id: number, props>} */
 insProps = {};
 
-var insId = 0;
+var insId = 0; // [DEBUG]
 
-// [DEBUG]
 var traceLog = [];
 var STATE_TEXT = {};
 STATE_TEXT[STATE_STOPPED] = 'STATE_STOPPED';
 STATE_TEXT[STATE_DELAYING] = 'STATE_DELAYING';
 STATE_TEXT[STATE_PLAYING] = 'STATE_PLAYING';
+
 function roundTime(timeValue) {
   return Math.round(timeValue / 200) * 200;
 } // for traceLog
@@ -355,18 +355,19 @@ function roundTime(timeValue) {
  * @param {string} type - One of EVENT_TYPE_*.
  * @returns {void}
  */
+
+
 function fireEvent(props, type) {
   // [DEBUG]
-  traceLog.push('<fireEvent>', '_id:' + props._id, 'state:' + STATE_TEXT[props.state]);
-  traceLog.push('isOn:' + props.isOn, 'runTime:' + roundTime(props.runTime), 'startTime:' + roundTime(props.startTime), 'currentPosition:' + roundTime(props.currentPosition));
-  traceLog.push('type:' + type);
-  // [/DEBUG]
-  var initTime = Math.min(Math.max(-props.delay, 0), props.duration),
-      elapsedTime = (initTime + (
-  // The value for transitionend might NOT be transition-duration. (csswg.org may be wrong)
-  (type === EVENT_TYPE_END || type === EVENT_TYPE_CANCEL) && props.startTime ? Date.now() - props.startTime : 0)) / 1000;
+  traceLog.push('<fireEvent>', "_id:".concat(props._id), "state:".concat(STATE_TEXT[props.state]));
+  traceLog.push("isOn:".concat(props.isOn), "runTime:".concat(roundTime(props.runTime)), "startTime:".concat(roundTime(props.startTime)), "currentPosition:".concat(roundTime(props.currentPosition)));
+  traceLog.push("type:".concat(type)); // [/DEBUG]
 
-  var event = void 0;
+  var initTime = Math.min(Math.max(-props.delay, 0), props.duration),
+      elapsedTime = (initTime + ( // The value for transitionend might NOT be transition-duration. (csswg.org may be wrong)
+  (type === EVENT_TYPE_END || type === EVENT_TYPE_CANCEL) && props.startTime ? Date.now() - props.startTime : 0)) / 1000;
+  var event;
+
   try {
     event = new props.window.TransitionEvent(type, {
       propertyName: props.options.property,
@@ -374,8 +375,8 @@ function fireEvent(props, type) {
       elapsedTime: elapsedTime,
       bubbles: true,
       cancelable: false
-    });
-    // Edge bug, can't set pseudoElement
+    }); // Edge bug, can't set pseudoElement
+
     if (IS_EDGE) {
       event.pseudoElement = props.options.pseudoElement;
     }
@@ -384,88 +385,101 @@ function fireEvent(props, type) {
     event.initTransitionEvent(type, true, false, props.options.property, elapsedTime);
     event.pseudoElement = props.options.pseudoElement;
   }
+
   event.timedTransition = props.ins;
   props.element.dispatchEvent(event);
   traceLog.push('</fireEvent>'); // [DEBUG/]
 }
-
 /**
  * @param {props} props - `props` of instance.
  * @returns {void}
  */
+
+
 function fixCurrentPosition(props) {
   // [DEBUG]
-  traceLog.push('<fixCurrentPosition>', '_id:' + props._id, 'state:' + STATE_TEXT[props.state]);
-  traceLog.push('currentPosition:' + roundTime(props.currentPosition));
-  // [/DEBUG]
+  traceLog.push('<fixCurrentPosition>', "_id:".concat(props._id), "state:".concat(STATE_TEXT[props.state]));
+  traceLog.push("currentPosition:".concat(roundTime(props.currentPosition))); // [/DEBUG]
+
   if (props.state !== STATE_PLAYING) {
     traceLog.push('CANCEL', '</fixCurrentPosition>'); // [DEBUG/]
+
     return;
   }
+
   var playingTime = Date.now() - props.startTime;
   props.currentPosition = props.isOn ? Math.min(props.currentPosition + playingTime, props.duration) : Math.max(props.currentPosition - playingTime, 0);
-  traceLog.push('currentPosition:' + roundTime(props.currentPosition)); // [DEBUG/]
+  traceLog.push("currentPosition:".concat(roundTime(props.currentPosition))); // [DEBUG/]
+
   traceLog.push('</fixCurrentPosition>'); // [DEBUG/]
 }
-
 /**
  * Finish the "on/off" immediately by isOn.
  * @param {props} props - `props` of instance.
  * @returns {void}
  */
+
+
 function finishAll(props) {
-  traceLog.push('<finishAll/>', '_id:' + props._id, 'isOn:' + props.isOn); // [DEBUG/]
+  traceLog.push('<finishAll/>', "_id:".concat(props._id), "isOn:".concat(props.isOn)); // [DEBUG/]
+
   props.state = STATE_STOPPED;
-  traceLog.push('state:' + STATE_TEXT[props.state]); // [DEBUG/]
+  traceLog.push("state:".concat(STATE_TEXT[props.state])); // [DEBUG/]
+
   props.runTime = 0;
   props.startTime = 0;
   props.currentPosition = props.isOn ? props.duration : 0;
 }
-
 /**
  * @param {props} props - `props` of instance.
  * @returns {void}
  */
+
+
 function finishPlaying(props) {
   // [DEBUG]
-  traceLog.push('<finishPlaying>', '_id:' + props._id, 'state:' + STATE_TEXT[props.state]);
-  traceLog.push('isOn:' + props.isOn, 'runTime:' + roundTime(props.runTime), 'startTime:' + roundTime(props.startTime), 'currentPosition:' + roundTime(props.currentPosition));
-  // [/DEBUG]
+  traceLog.push('<finishPlaying>', "_id:".concat(props._id), "state:".concat(STATE_TEXT[props.state]));
+  traceLog.push("isOn:".concat(props.isOn), "runTime:".concat(roundTime(props.runTime)), "startTime:".concat(roundTime(props.startTime)), "currentPosition:".concat(roundTime(props.currentPosition))); // [/DEBUG]
+
   if (props.state !== STATE_PLAYING) {
     traceLog.push('CANCEL', '</finishPlaying>'); // [DEBUG/]
+
     return;
   }
 
   props.state = STATE_STOPPED;
-  traceLog.push('state:' + STATE_TEXT[props.state]); // [DEBUG/]
-  fireEvent(props, EVENT_TYPE_END);
+  traceLog.push("state:".concat(STATE_TEXT[props.state])); // [DEBUG/]
 
+  fireEvent(props, EVENT_TYPE_END);
   finishAll(props);
   traceLog.push('</finishPlaying>'); // [DEBUG/]
 }
-
 /**
  * @param {props} props - `props` of instance.
  * @returns {void}
  */
+
+
 function finishDelaying(props) {
   // [DEBUG]
-  traceLog.push('<finishDelaying>', '_id:' + props._id, 'state:' + STATE_TEXT[props.state]);
-  traceLog.push('isOn:' + props.isOn, 'runTime:' + roundTime(props.runTime), 'startTime:' + roundTime(props.startTime), 'currentPosition:' + roundTime(props.currentPosition));
-  // [/DEBUG]
+  traceLog.push('<finishDelaying>', "_id:".concat(props._id), "state:".concat(STATE_TEXT[props.state]));
+  traceLog.push("isOn:".concat(props.isOn), "runTime:".concat(roundTime(props.runTime)), "startTime:".concat(roundTime(props.startTime)), "currentPosition:".concat(roundTime(props.currentPosition))); // [/DEBUG]
+
   if (props.state !== STATE_DELAYING) {
     traceLog.push('CANCEL', '</finishDelaying>'); // [DEBUG/]
+
     return;
   }
 
   props.state = STATE_PLAYING;
-  traceLog.push('state:' + STATE_TEXT[props.state]); // [DEBUG/]
+  traceLog.push("state:".concat(STATE_TEXT[props.state])); // [DEBUG/]
+
   props.startTime = Date.now();
   props.isReversing = !props.isOn;
   fireEvent(props, EVENT_TYPE_START);
-
   var durationLeft = props.isOn ? props.duration - props.currentPosition : props.currentPosition;
-  traceLog.push('durationLeft:' + roundTime(durationLeft)); // [DEBUG/]
+  traceLog.push("durationLeft:".concat(roundTime(durationLeft))); // [DEBUG/]
+
   if (durationLeft > 0) {
     props.timer = setTimeout(function () {
       finishPlaying(props);
@@ -473,41 +487,49 @@ function finishDelaying(props) {
   } else {
     finishPlaying(props);
   }
+
   traceLog.push('</finishDelaying>'); // [DEBUG/]
 }
-
 /**
  * @param {props} props - `props` of instance.
  * @returns {void}
  */
+
+
 function abort(props) {
-  traceLog.push('<abort>', '_id:' + props._id, 'isOn:' + props.isOn); // [DEBUG/]
+  traceLog.push('<abort>', "_id:".concat(props._id), "isOn:".concat(props.isOn)); // [DEBUG/]
+
   clearTimeout(props.timer);
+
   if (props.state === STATE_STOPPED) {
     traceLog.push('CANCEL', '</abort>'); // [DEBUG/]
+
     return;
   }
 
   props.state = STATE_STOPPED;
-  traceLog.push('state:' + STATE_TEXT[props.state]); // [DEBUG/]
+  traceLog.push("state:".concat(STATE_TEXT[props.state])); // [DEBUG/]
+
   fireEvent(props, EVENT_TYPE_CANCEL);
   traceLog.push('</abort>'); // [DEBUG/]
 }
-
 /**
  * @param {props} props - `props` of instance.
  * @param {boolean} force - Skip transition.
  * @param {Array} args - Arguments that are passed to procToOn.
  * @returns {void}
  */
+
+
 function _on(props, force, args) {
   // [DEBUG]
-  traceLog.push('<on>', '_id:' + props._id, 'state:' + STATE_TEXT[props.state]);
-  traceLog.push('force:' + !!force);
-  traceLog.push('isOn:' + props.isOn, 'runTime:' + roundTime(props.runTime), 'startTime:' + roundTime(props.startTime), 'currentPosition:' + roundTime(props.currentPosition));
-  // [/DEBUG]
+  traceLog.push('<on>', "_id:".concat(props._id), "state:".concat(STATE_TEXT[props.state]));
+  traceLog.push("force:".concat(!!force));
+  traceLog.push("isOn:".concat(props.isOn), "runTime:".concat(roundTime(props.runTime)), "startTime:".concat(roundTime(props.startTime)), "currentPosition:".concat(roundTime(props.currentPosition))); // [/DEBUG]
+
   if (props.isOn && props.state === STATE_STOPPED || props.isOn && props.state !== STATE_STOPPED && !force) {
     traceLog.push('CANCEL', '</on>'); // [DEBUG/]
+
     return;
   }
   /*
@@ -515,6 +537,7 @@ function _on(props, force, args) {
       - Done `off` or playing to `off`, regardless of `force`
       - Playing to `on` and `force`
   */
+
 
   if (props.options.procToOn) {
     args.unshift(!!force);
@@ -524,17 +547,17 @@ function _on(props, force, args) {
   if (force || !props.isOn && props.state === STATE_DELAYING || -props.delay > props.duration) {
     // The delay must have not changed before turning over.
     // [DEBUG]
-    traceLog.push('STOP(' + (force ? 'force' : !props.isOn && props.state === STATE_DELAYING ? 'DELAYING' : 'over-duration') + ')');
-    // [/DEBUG]
+    traceLog.push("STOP(".concat(force ? 'force' : !props.isOn && props.state === STATE_DELAYING ? 'DELAYING' : 'over-duration', ")")); // [/DEBUG]
+
     abort(props);
     props.isOn = true;
     finishAll(props);
   } else {
     fixCurrentPosition(props);
     abort(props);
-
     props.state = STATE_DELAYING;
-    traceLog.push('state:' + STATE_TEXT[props.state]); // [DEBUG/]
+    traceLog.push("state:".concat(STATE_TEXT[props.state])); // [DEBUG/]
+
     props.isOn = true;
     props.runTime = Date.now();
     props.startTime = 0;
@@ -549,26 +572,30 @@ function _on(props, force, args) {
         // Move the position to the right.
         props.currentPosition = Math.min(props.currentPosition - props.delay, props.duration);
       }
+
       finishDelaying(props);
     }
   }
+
   traceLog.push('</on>'); // [DEBUG/]
 }
-
 /**
  * @param {props} props - `props` of instance.
  * @param {boolean} force - Skip transition.
  * @param {Array} args - Arguments that are passed to procToOff.
  * @returns {void}
  */
+
+
 function _off(props, force, args) {
   // [DEBUG]
-  traceLog.push('<off>', '_id:' + props._id, 'state:' + STATE_TEXT[props.state]);
-  traceLog.push('force:' + !!force);
-  traceLog.push('isOn:' + props.isOn, 'runTime:' + roundTime(props.runTime), 'startTime:' + roundTime(props.startTime), 'currentPosition:' + roundTime(props.currentPosition));
-  // [/DEBUG]
+  traceLog.push('<off>', "_id:".concat(props._id), "state:".concat(STATE_TEXT[props.state]));
+  traceLog.push("force:".concat(!!force));
+  traceLog.push("isOn:".concat(props.isOn), "runTime:".concat(roundTime(props.runTime)), "startTime:".concat(roundTime(props.startTime)), "currentPosition:".concat(roundTime(props.currentPosition))); // [/DEBUG]
+
   if (!props.isOn && props.state === STATE_STOPPED || !props.isOn && props.state !== STATE_STOPPED && !force) {
     traceLog.push('CANCEL', '</off>'); // [DEBUG/]
+
     return;
   }
   /*
@@ -576,6 +603,7 @@ function _off(props, force, args) {
       - Done `on` or playing to `on`, regardless of `force`
       - Playing to `off` and `force`
   */
+
 
   if (props.options.procToOff) {
     args.unshift(!!force);
@@ -585,17 +613,17 @@ function _off(props, force, args) {
   if (force || props.isOn && props.state === STATE_DELAYING || -props.delay > props.duration) {
     // The delay must have not changed before turning over.
     // [DEBUG]
-    traceLog.push('STOP(' + (force ? 'force' : props.isOn && props.state === STATE_DELAYING ? 'DELAYING' : 'over-duration') + ')');
-    // [/DEBUG]
+    traceLog.push("STOP(".concat(force ? 'force' : props.isOn && props.state === STATE_DELAYING ? 'DELAYING' : 'over-duration', ")")); // [/DEBUG]
+
     abort(props);
     props.isOn = false;
     finishAll(props);
   } else {
     fixCurrentPosition(props);
     abort(props);
-
     props.state = STATE_DELAYING;
-    traceLog.push('state:' + STATE_TEXT[props.state]); // [DEBUG/]
+    traceLog.push("state:".concat(STATE_TEXT[props.state])); // [DEBUG/]
+
     props.isOn = false;
     props.runTime = Date.now();
     props.startTime = 0;
@@ -610,60 +638,63 @@ function _off(props, force, args) {
         // Move the position to the left.
         props.currentPosition = Math.max(props.currentPosition + props.delay, 0);
       }
+
       finishDelaying(props);
     }
   }
+
   traceLog.push('</off>'); // [DEBUG/]
 }
-
 /**
  * @param {props} props - `props` of instance.
  * @param {Object} newOptions - New options.
  * @returns {void}
  */
+
+
 function _setOptions(props, newOptions) {
   var options = props.options;
 
   function parseAsCss(option) {
     var optionValue = typeof newOptions[option] === 'number' // From CSS
-    ? (props.window.getComputedStyle(props.element, '')[cssprefix__WEBPACK_IMPORTED_MODULE_0__["default"].getName('transition-' + option)] || '').split(',')[newOptions[option]] : newOptions[option];
-    // [DEBUG]
-    props.lastParseAsCss[option] = typeof optionValue === 'string' ? optionValue.trim() : null;
-    // [/DEBUG]
-    return typeof optionValue === 'string' ? optionValue.trim() : null;
-  }
+    ? (props.window.getComputedStyle(props.element, '')[cssprefix__WEBPACK_IMPORTED_MODULE_0__["default"].getName("transition-".concat(option))] || '').split(',')[newOptions[option]] : newOptions[option]; // [DEBUG]
 
-  // pseudoElement
+    props.lastParseAsCss[option] = typeof optionValue === 'string' ? optionValue.trim() : null; // [/DEBUG]
+
+    return typeof optionValue === 'string' ? optionValue.trim() : null;
+  } // pseudoElement
+
+
   if (typeof newOptions.pseudoElement === 'string') {
     options.pseudoElement = newOptions.pseudoElement;
-  }
+  } // property
 
-  // property
+
   {
     var value = parseAsCss('property');
+
     if (typeof value === 'string' && value !== 'all' && value !== 'none') {
       options.property = value;
     }
-  }
+  } // duration, delay
 
-  // duration, delay
   ['duration', 'delay'].forEach(function (option) {
     var value = parseAsCss(option);
+
     if (typeof value === 'string') {
-      var matches = void 0,
-          timeValue = void 0;
+      var matches, timeValue;
+
       if (/^[0.]+$/.test(value)) {
         // This is invalid for CSS.
         options[option] = '0s';
         props[option] = 0;
       } else if ((matches = /^(.+?)(m)?s$/.exec(value)) && isFinite(timeValue = parseFloat(matches[1])) && (option !== 'duration' || timeValue >= 0)) {
-        options[option] = '' + timeValue + (matches[2] || '') + 's';
+        options[option] = "".concat(timeValue).concat(matches[2] || '', "s");
         props[option] = timeValue * (matches[2] ? 1 : 1000);
       }
     }
-  });
+  }); // procToOn, procToOff
 
-  // procToOn, procToOff
   ['procToOn', 'procToOff'].forEach(function (option) {
     if (typeof newOptions[option] === 'function') {
       options[option] = newOptions[option];
@@ -673,7 +704,7 @@ function _setOptions(props, newOptions) {
   });
 }
 
-var TimedTransition = function () {
+var TimedTransition = /*#__PURE__*/function () {
   /**
    * Create a `TimedTransition` instance.
    * @param {Element} element - Target element.
@@ -685,7 +716,8 @@ var TimedTransition = function () {
 
     var props = {
       ins: this,
-      options: { // Initial options (not default)
+      options: {
+        // Initial options (not default)
         pseudoElement: '',
         property: ''
       },
@@ -695,56 +727,62 @@ var TimedTransition = function () {
     };
     props.lastParseAsCss = {}; // [DEBUG/]
 
-    Object.defineProperty(this, '_id', { value: ++insId });
+    Object.defineProperty(this, '_id', {
+      value: ++insId
+    });
     props._id = this._id;
     insProps[this._id] = props;
 
     if (!element.nodeType || element.nodeType !== Node.ELEMENT_NODE) {
       throw new Error('This `element` is not accepted.');
     }
+
     props.element = element;
+
     if (!options) {
       options = {};
     }
-    props.window = element.ownerDocument.defaultView || options.window || window;
 
-    // Default options
+    props.window = element.ownerDocument.defaultView || options.window || window; // Default options
+
     if (!options.hasOwnProperty('property')) {
       options.property = 0;
     }
+
     if (!options.hasOwnProperty('duration')) {
       options.duration = 0;
     }
+
     if (!options.hasOwnProperty('delay')) {
       options.delay = 0;
     }
 
     _setOptions(props, options);
+
     finishAll(props);
   }
 
   _createClass(TimedTransition, [{
-    key: 'remove',
+    key: "remove",
     value: function remove() {
       var props = insProps[this._id];
       clearTimeout(props.timer);
       delete insProps[this._id];
     }
-
     /**
      * @param {Object} options - New options.
      * @returns {TimedTransition} Current instance itself.
      */
 
   }, {
-    key: 'setOptions',
+    key: "setOptions",
     value: function setOptions(options) {
       if (options) {
         _setOptions(insProps[this._id], options);
       }
+
       return this;
     }
-
     /**
      * Set `on`.
      * @param {boolean} [force] - Set `on` it immediately without transition.
@@ -754,7 +792,7 @@ var TimedTransition = function () {
      */
 
   }, {
-    key: 'on',
+    key: "on",
     value: function on(force, options) {
       if (arguments.length < 2 && typeof force !== 'boolean') {
         options = force;
@@ -762,10 +800,11 @@ var TimedTransition = function () {
       }
 
       this.setOptions(options);
+
       _on(insProps[this._id], force, Array.prototype.slice.call(arguments, 2));
+
       return this;
     }
-
     /**
      * Set 'off'.
      * @param {boolean} [force] - Set `off` it immediately without transition.
@@ -775,7 +814,7 @@ var TimedTransition = function () {
      */
 
   }, {
-    key: 'off',
+    key: "off",
     value: function off(force, options) {
       if (arguments.length < 2 && typeof force !== 'boolean') {
         options = force;
@@ -783,100 +822,111 @@ var TimedTransition = function () {
       }
 
       this.setOptions(options);
+
       _off(insProps[this._id], force, Array.prototype.slice.call(arguments, 2));
+
       return this;
     }
   }, {
-    key: 'state',
+    key: "state",
     get: function get() {
       return insProps[this._id].state;
     }
   }, {
-    key: 'element',
+    key: "element",
     get: function get() {
       return insProps[this._id].element;
     }
   }, {
-    key: 'isReversing',
+    key: "isReversing",
     get: function get() {
       return insProps[this._id].isReversing;
     }
   }, {
-    key: 'pseudoElement',
+    key: "pseudoElement",
     get: function get() {
       return insProps[this._id].options.pseudoElement;
     },
     set: function set(value) {
-      _setOptions(insProps[this._id], { pseudoElement: value });
+      _setOptions(insProps[this._id], {
+        pseudoElement: value
+      });
     }
   }, {
-    key: 'property',
+    key: "property",
     get: function get() {
       return insProps[this._id].options.property;
     },
     set: function set(value) {
-      _setOptions(insProps[this._id], { property: value });
+      _setOptions(insProps[this._id], {
+        property: value
+      });
     }
   }, {
-    key: 'duration',
+    key: "duration",
     get: function get() {
       return insProps[this._id].options.duration;
     },
     set: function set(value) {
-      _setOptions(insProps[this._id], { duration: value });
+      _setOptions(insProps[this._id], {
+        duration: value
+      });
     }
   }, {
-    key: 'delay',
+    key: "delay",
     get: function get() {
       return insProps[this._id].options.delay;
     },
     set: function set(value) {
-      _setOptions(insProps[this._id], { delay: value });
+      _setOptions(insProps[this._id], {
+        delay: value
+      });
     }
   }, {
-    key: 'procToOn',
+    key: "procToOn",
     get: function get() {
       return insProps[this._id].options.procToOn;
     },
     set: function set(value) {
-      _setOptions(insProps[this._id], { procToOn: value });
+      _setOptions(insProps[this._id], {
+        procToOn: value
+      });
     }
   }, {
-    key: 'procToOff',
+    key: "procToOff",
     get: function get() {
       return insProps[this._id].options.procToOff;
     },
     set: function set(value) {
-      _setOptions(insProps[this._id], { procToOff: value });
+      _setOptions(insProps[this._id], {
+        procToOff: value
+      });
     }
   }], [{
-    key: 'STATE_STOPPED',
+    key: "STATE_STOPPED",
     get: function get() {
       return STATE_STOPPED;
     }
   }, {
-    key: 'STATE_DELAYING',
+    key: "STATE_DELAYING",
     get: function get() {
       return STATE_DELAYING;
     }
   }, {
-    key: 'STATE_PLAYING',
+    key: "STATE_PLAYING",
     get: function get() {
       return STATE_PLAYING;
     }
   }]);
 
   return TimedTransition;
-}();
-
-// [DEBUG]
+}(); // [DEBUG]
 
 
 TimedTransition.insProps = insProps;
 TimedTransition.traceLog = traceLog;
 TimedTransition.STATE_TEXT = STATE_TEXT;
-TimedTransition.roundTime = roundTime;
-// [/DEBUG]
+TimedTransition.roundTime = roundTime; // [/DEBUG]
 
 /* harmony default export */ __webpack_exports__["default"] = (TimedTransition);
 
