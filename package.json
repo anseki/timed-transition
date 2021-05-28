@@ -1,6 +1,6 @@
 {
   "name": "timed-transition",
-  "version": "1.5.2",
+  "version": "1.5.3",
   "title": "TimedTransition",
   "description": "The simple shim for Transition Events with CSS transitions, that transparently intercepts difference between browsers.",
   "keywords": [
