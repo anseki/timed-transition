@@ -1,6 +1,6 @@
 # TimedTransition
 
-[![npm](https://img.shields.io/npm/v/timed-transition.svg)](https://www.npmjs.com/package/timed-transition) [![GitHub issues](https://img.shields.io/github/issues/anseki/timed-transition.svg)](https://github.com/anseki/timed-transition/issues) [![dependencies](https://img.shields.io/badge/dependencies-No%20dependency-brightgreen.svg)](package.json) [![license](https://img.shields.io/badge/license-MIT-blue.svg)](LICENSE-MIT)
+[![npm](https://img.shields.io/npm/v/timed-transition.svg)](https://www.npmjs.com/package/timed-transition) [![GitHub issues](https://img.shields.io/github/issues/anseki/timed-transition.svg)](https://github.com/anseki/timed-transition/issues) [![dependencies](https://img.shields.io/badge/dependencies-No%20dependency-brightgreen.svg)](package.json) [![license](https://img.shields.io/badge/license-MIT-blue.svg)](LICENSE)
 
 The simple shim for [Transition Events](https://drafts.csswg.org/css-transitions/#transition-events) with [CSS transitions](https://developer.mozilla.org/en-US/docs/Web/CSS/CSS_Transitions/Using_CSS_transitions), that transparently intercepts difference between browsers.
 
